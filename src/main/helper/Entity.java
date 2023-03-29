@@ -1,29 +1,22 @@
-package com.app.helper;
+package helper;
 
 import java.awt.Graphics;
+import java.awt.Image;
 
-/**
- * the interface used to specify that this class is an {@code Entity}
- * and should be treated as such, so anything that implements this will
- * have all traits a regular game {@code Entity} should normally have
- * @author RamenGOD
- */
-public interface Entity {
+public abstract class Entity implements Drawable {
+    //this class shouldnt contain too much data as individual entities need so specify it themselves
+    public Image img;
+    public int x;
+    public int y;
     //
-    public int gravity = 4;
+    public Entity(Image img, int x, int y) {
+        this.img = img;
+        this.x = x;
+        this.y = y;
+    }
     //
-    public boolean isHostile();
-    //
-    public void paint(Graphics g);
-    //
-    public double getHealth();
-    //
-    public void setHealth(double health);
-    //
-    public void gravity();
-    //
-    public int getX();
-    //
-    public int getY();
-    //
+    @Override
+    public void draw(Graphics g) {
+        //
+    }
 }

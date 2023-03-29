@@ -1,16 +1,24 @@
-package com.app.helper;
+package helper;
 
-import java.awt.Color;
+import java.util.List;
+import java.util.ArrayList;
 
-import javax.swing.JPanel;
-
-public class World extends JPanel {
+public class World { // this class should only STORE DATA about the WORLD!
+    private List<Entity> entities = new ArrayList<>();
     //
     public World() {
         //
-        this.setBackground(Color.BLACK);
-        this.setSize(720, 600);
-        //
     }
     //
+    public Entity getEntity(Object entity) {
+        return entities.get(entities.indexOf(entity));
+    }
+    //
+    public void add(Entity entity) {
+        entities.add(entity);
+    }
+    //
+    public void remove(Entity entity) {
+        entities.remove(entity);
+    }
 }

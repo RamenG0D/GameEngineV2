@@ -1,4 +1,4 @@
-package com.app.helper;
+package helper;
 
 import javax.imageio.ImageIO;
 import java.awt.Image;
