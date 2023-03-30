@@ -1,12 +1,13 @@
-import javax.swing.JFrame;
-
+import Renders.Camera;
+import Renders.Camera2D;
 import helper.App;
 
 public class Main {
     //
     public Main() {
         //
-        new App("App", 800, 600, null, null);
+        Camera cam = new Camera2D(0, 0);
+        new App("App", 800, 600, cam, null, null);
         //
     }
     //
