@@ -6,6 +6,5 @@ public interface Camera { // basic camera class to define basic camera methods s
     //
     public void render(Graphics g);
     public void setViewPortSize(int width, int height);
-    public boolean ViewPortAlreadySet();
     //
 }

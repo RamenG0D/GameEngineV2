@@ -1,22 +1,27 @@
 package Renders;
+//
 import java.awt.Graphics;
-import java.awt.Rectangle;
 
 public class Camera2D implements Camera {
-    private boolean CameraSet = false; // false by default so no null or other error occur
-    private Rectangle ViewPort;
+    private int height;
+    private int width;
+    private int x;
+    private int y;
     //
     public Camera2D(int x, int y, int width, int height) {
-        ViewPort = new Rectangle(x, y, width, height);
+        //
+        this.height = height;
+        this.width = width;
+        this.x = x;
+        this.y = y;
+        //
     }
     //
     public Camera2D(int x, int y) {
-        // zeros are temp untill set later by the paint method
-        ViewPort = new Rectangle(x, y, 0, 0);
-    }
-    //
-    public Camera2D(Rectangle viewport) {
-        ViewPort = viewport;
+        //
+        this.x = x;
+        this.y = y;
+        //
     }
     //
     @Override
@@ -26,16 +31,9 @@ public class Camera2D implements Camera {
     //
     @Override
     public void setViewPortSize(int width, int height) {
-        ViewPort.width = width - 1;
-        ViewPort.height = height - 38;
-    }
-    //
-    public Rectangle getViewPort() {
-        return ViewPort;
-    }
-    //
-    @Override
-    public boolean ViewPortAlreadySet() {
-        return CameraSet;
+        //
+        this.height = height;
+        this.width  =  width;
+        //
     }
 }

@@ -1,6 +1,5 @@
 package helper;
 
-import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseListener;
@@ -46,15 +45,13 @@ public class App extends JFrame {
      * <h3>A class to define window and application behavior</h3>
      * creates a default window and graphics context
      */
-    public App(String title, int width, int height, Camera camera, KeyListener kl, MouseListener ml) {
+    public App(String title, int width, int height, Camera camera) {
         //
         this.setSize(width, height);
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.setLocationRelativeTo(null);
         this.setTitle(title);
         //
-        this.addKeyListener(kl);
-        this.addMouseListener(ml);
         panel.setSize(getWidth(), getHeight());
         this.add(panel);
         //
@@ -74,23 +71,18 @@ public class App extends JFrame {
         }
         //
     }
-    //
-    @Override
-    public void setResizable(boolean visible) {
-        this.setResizable(visible);
-    }
     /** sets the cam to be used for this window (the angine only supports one cam TOTAL, at the moment) */
     public void setCamera(Camera camera) {
         this.camera = camera;
     }
     //
-    public void setKeyListener(KeyListener kl) {
+    /*public void setKeyListener(KeyListener kl) {
         this.addKeyListener(kl);
     }
     //
     public void setMouseListener(MouseListener ml) {
         this.addMouseListener(ml);
-    }
+    }*/
     //
     @Override
     public void paint(Graphics g) {
