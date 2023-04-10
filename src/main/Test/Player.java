@@ -1,14 +1,21 @@
 package Test;
 
+import java.awt.Color;
 import java.awt.Graphics;
 
 public class Player {
-    public int x, y, z; // position
-    public int angle;
-    public int look; // up and down look rotation for player
-
+    public int x, y;
+    //
+    public Player(int x, int y) {
+        //
+        this.x = x;
+        this.y = y;
+        //
+    }
+    //
     public void draw(Graphics g) {
-        g.fillRect(x, y, 1, 1);
+        g.setColor(Color.RED);
+        g.fillRect(x, y, 10, 10);
         //
     }
 }

@@ -1,4 +1,3 @@
-import Renders.Camera;
 import Renders.Camera2D;
 import helper.App;
 
@@ -6,8 +5,7 @@ public class Main {
     //
     public Main() {
         //
-        Camera cam = new Camera2D(0, 0);
-        new App("App", 800, 600, cam, null, null);
+        new App("App", 800, 600, new Camera2D(0,0,800,600));
         //
     }
     //

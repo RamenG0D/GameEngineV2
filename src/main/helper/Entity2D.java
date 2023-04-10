@@ -1,5 +1,6 @@
 package helper;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Image;
 
@@ -17,6 +18,10 @@ public abstract class Entity2D implements Drawable {
     //
     @Override
     public void draw(Graphics g) {
+        //
+        g.setColor(Color.RED);
+        g.drawRect(x, y, 10, 10);
+        g.drawImage(img, x, y, null);
         //
     }
 }

@@ -1,17 +1,13 @@
 package helper;
 
 import java.awt.Graphics;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseListener;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-
 import Renders.Camera;
-import Renders.Camera2D;
 
 public class App extends JFrame {
     private Panel panel = new Panel();
-    private World world;
+    private World world = new World();
     /* 
      * camera clsses are kinda just a funnel where we assemble the graphics data 
      * to what wthe camera wants(3d vs 2d), then the camera hands the result back
@@ -34,8 +30,7 @@ public class App extends JFrame {
         this.setTitle("Application"); // default Title
         panel.setSize(getWidth(), getWidth());
         this.add(panel);
-        //
-        this.camera = new Camera2D(0, 0, getWidth() - 1, getHeight() - 1);
+        //this.camera = new Camera2D(0, 0, getWidth() - 1, getHeight() - 1);
         world = new World();
         this.setVisible(true);
         repaint();
@@ -59,6 +54,10 @@ public class App extends JFrame {
         this.setVisible(true);
         repaint();
         //
+    }
+    //
+    public World getWorld() {
+        return world;
     }
     //
     class Panel extends JPanel {
@@ -88,8 +87,8 @@ public class App extends JFrame {
     public void paint(Graphics g) {
         super.paint(g);
         //
-        if(!camera.ViewPortAlreadySet()) camera.setViewPortSize(getWidth(), getHeight());
         panel.repaint();
+        camera.render(g);
     }
     /**
      *  a general purpose state Manager to facilitate changes in the game such
