@@ -1,5 +1,4 @@
 package helper;
-
 /**
  * The class responsible for controlling most, if not all velocity based movement
  * @author RamenGOD
@@ -27,8 +26,10 @@ public class Vector2 {
     //
     public void add(int x, int y) {
         if(isClamped) {
-            this.x += Math.min(x, max);
-            this.y += Math.min(y, max);
+            this.x += x;
+            this.y += y;
+            if(this.x > max) this.x = max; 
+            if(this.y > max) this.y = max;
         } else {
             this.x += x;
             this.y += y;
@@ -37,8 +38,10 @@ public class Vector2 {
     //
     public void subtract(int x, int y) {
         if(isClamped) {
-            this.x += Math.max(x, min);
-            this.y += Math.max(y, min);
+            this.x -= x;
+            this.y -= y;
+            if(this.x < min) this.x = min; 
+            if(this.y < min) this.y = min;
         } else {
             this.x += x;
             this.y += y;

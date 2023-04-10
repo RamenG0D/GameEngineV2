@@ -1,6 +1,8 @@
 package helper;
 
 import java.awt.Graphics;
+import java.awt.event.KeyListener;
+
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import Renders.Camera;
@@ -75,11 +77,11 @@ public class App extends JFrame {
         this.camera = camera;
     }
     //
-    /*public void setKeyListener(KeyListener kl) {
+    public void setKeyListener(KeyListener kl) {
         this.addKeyListener(kl);
     }
     //
-    public void setMouseListener(MouseListener ml) {
+    /*public void setMouseListener(MouseListener ml) {
         this.addMouseListener(ml);
     }*/
     //
@@ -88,7 +90,6 @@ public class App extends JFrame {
         super.paint(g);
         //
         panel.repaint();
-        camera.render(g);
     }
     /**
      *  a general purpose state Manager to facilitate changes in the game such
