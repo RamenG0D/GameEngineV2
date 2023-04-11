@@ -24,18 +24,8 @@ public class Camera2D implements Camera {
     //
     @Override
     public void render(Graphics g) {
-        int dx = (int)(Math.cos(player.angle) * 5);
-        int dy = (int)(Math.sin(player.angle) * 5);
         // render stuff
         if(player != null) player.draw(g);
-        g.setColor(Color.BLUE);
-        g.fillRect(40*dx, 40*dy, 10, 10);               g.fillRect(80*dx, 40*dy, 10, 10);
-        g.fillRect(40*dx, 80*dy, 10, 10);               g.fillRect(80*dx, 80*dy, 10, 10);
-        //
-        /*g.fillRect(, , 10, 10);
-        g.fillRect(, , 10, 10);
-        g.fillRect(, , 10, 10);
-        g.fillRect(, , 10, 10);*/
         //
     }
     //
