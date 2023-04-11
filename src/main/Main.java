@@ -10,20 +10,20 @@ import helper.App;
 import helper.Button;
 
 public class Main implements KeyListener {
+    private MainMenu menu = new MainMenu();
     private Camera cam;
     private Player p;
     private App app;
-    private double fps;
     //
     public Main() {
         //
         p = new Player(100, 100);
         cam = new Camera2D(p, 0 ,0, 800, 600);
-        app = new App("App", 800, 600, cam);
+        app = new App("Test Application", 800, 600, cam);
         app.setKeyListener(this);
         //
         double last = System.nanoTime();
-        double MS_PER_UPDATE = 20_000_000.0;
+        double MS_PER_UPDATE = 10_000_000.0;
         double lag = 0.0f;
         //
         while(app.state == App.ApplicationState.Running) {
@@ -33,22 +33,24 @@ public class Main implements KeyListener {
             lag += elapsed;
             //
             while(lag >= MS_PER_UPDATE) {
-                update();
+                update(elapsed);
                 lag -= MS_PER_UPDATE;
             }
             //
-            render((float)(lag / MS_PER_UPDATE));
+            render(lag / MS_PER_UPDATE);
         }
         //
     }
     //
-    public void render(float delta) {
-        app.setFPS(delta);
+    public void render(double FAS) { // FAS (Frames Ahead Of Schedue)
+        menu.DrawMenu(app.getPanel().getGraphics());
         app.repaint();
     }
     //
-    public void update() {
-        // things update here/things in world update here
+    public void update(double delta) { // delta is the time between now and the last frame or the FPS
+        // things update here/things in world update here, this also handles application updates
+        app.setFPS(delta);
+        //
         input();
     }
     //
@@ -121,12 +123,20 @@ public class Main implements KeyListener {
     @Override
     public void keyTyped(KeyEvent e) {}
     //
-    public void DrawMenu(Graphics g) {
-        Button btn1 = new Button(200, 300, 100, 80);
+    class MainMenu {
+        public Button btn1 = new Button(200, 300, 100, 80);
         //
-        g.setColor(new Color(0,0,0,120));
-        g.fillRect(0,0,app.getWidth(),app.getHeight());
-        btn1.repaint();
+        public MainMenu() {
+            app.add(btn1);
+            //
+        }
+        //
+        public void DrawMenu(Graphics g) {
+            //
+            g.setColor(new Color(0,0,0,120));
+            g.fillRect(0,0,app.getWidth(),app.getHeight());
+            //
+        }
     }
     //
 }

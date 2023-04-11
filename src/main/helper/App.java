@@ -21,7 +21,7 @@ public class App extends JFrame {
         this.fps = fps;
     }
     /**
-     * the initialized gameState enum for use and modification/checking
+     * the currently initialized Application's State for general use and modification/checking
      */
     public ApplicationState state = ApplicationState.Running;
     /**
@@ -76,7 +76,7 @@ public class App extends JFrame {
             g.drawString("FPS: " + fps, 10, 10);
         }
     }
-    /** sets the cam to be used for this window (the angine only supports one cam TOTAL, at the moment) */
+    /** sets the cam to be used for this window (the engine only supports one cam TOTAL, at the moment...) */
     public void setCamera(Camera camera) {
         this.camera = camera;
     }
@@ -85,13 +85,13 @@ public class App extends JFrame {
         this.addKeyListener(kl);
     }
     //
-    /*public void setMouseListener(MouseListener ml) {
-        this.addMouseListener(ml);
-    }*/
     public Panel getPanel() {
         return panel;
     }
     //
+    /*public void setMouseListener(MouseListener ml) {
+        this.addMouseListener(ml);
+    }*/
     @Override
     public void paint(Graphics g) {
         super.paint(g);
@@ -99,10 +99,10 @@ public class App extends JFrame {
         panel.repaint();
     }
     /**
-     *  a general purpose state Manager to facilitate changes in the game such
-     *  app closing, app minimized, yep its pretty simple, its ment to serve as more of a wrapper
+     *  <h3>a general purpose state Manager to facilitate changes in the app such
+     *  app closing, app minimized</h3> yep its pretty simple, its ment to serve as more of a wrapper
      *  where ill later add methods to this class to manage the app such as App.exit() -> closes the app
-     *  or App app = new App(); app.state = ApplicationState.Closing; which ever i choose will close the app
+     *  or App app = new App(); app.state = ApplicationState.Closing; which ever i choose, both close the app
      */
     public static enum ApplicationState {
         // app states
