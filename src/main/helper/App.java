@@ -2,13 +2,15 @@ package helper;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.WindowEvent;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import Renders.Camera;
 
-public class App extends JFrame {
+public abstract class App extends JFrame implements KeyListener {
     private Panel panel = new Panel();
     private double fps;
     /* 
@@ -17,9 +19,6 @@ public class App extends JFrame {
      * to the app to be drawn to the panel
      */
     private Camera camera;
-    public void setFPS(double fps) {
-        this.fps = fps;
-    }
     /**
      * the currently initialized Application's State for general use and modification/checking
      */
@@ -35,11 +34,29 @@ public class App extends JFrame {
         this.setLocationRelativeTo(null);
         this.setTitle("Application"); // default Title
         panel.setSize(getWidth(), getWidth());
+        this.addKeyListener(this);
         this.add(panel);
-        //this.camera = new Camera2D(0, 0, getWidth() - 1, getHeight() - 1);
         this.setVisible(true);
         repaint();
         //
+        double last = System.nanoTime();
+        double MS_PER_UPDATE = 30_000_000.0;
+        double lag = 0.0f;
+        //
+        while(true) {
+            double current = System.nanoTime();
+            double elapsed = current - last;
+            last = current;
+            lag += elapsed;
+            //
+            while(lag >= MS_PER_UPDATE) {
+                update((float)elapsed);
+                lag -= MS_PER_UPDATE;
+            }
+            //
+            render(lag / MS_PER_UPDATE);
+            repaint();
+        }
     }
     /**
      * <h3>A class to define window and application behavior</h3>
@@ -50,6 +67,7 @@ public class App extends JFrame {
         this.setSize(width, height);
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.setLocationRelativeTo(null);
+        this.addKeyListener(this);
         this.setTitle(title);
         //
         panel.setSize(getWidth(), getHeight());
@@ -59,21 +77,47 @@ public class App extends JFrame {
         this.setVisible(true);
         repaint();
         //
+        double last = System.nanoTime();
+        double MS_PER_UPDATE = 30_000_000.0;
+        double lag = 0.0f;
+        //
+        while(true) {
+            double current = System.nanoTime();
+            double elapsed = current - last;
+            last = current;
+            lag += elapsed;
+            //
+            while(lag >= MS_PER_UPDATE) {
+                update((float)elapsed);
+                lag -= MS_PER_UPDATE;
+            }
+            //
+            render(lag / MS_PER_UPDATE);
+            repaint();
+        }
     }
+    //
+    public void CloseApp() {
+        this.dispatchEvent(
+            new WindowEvent(this, WindowEvent.WINDOW_CLOSING)
+        );
+    }
+    //
+    public abstract void render(double FAS); // render loop that must be implemented
+    public abstract void update(float delta); // logic loop that must be implemented
     //
     public class Panel extends JPanel {
         //
         @Override
         public void paint(Graphics g) {
             super.paint(g);
-            //
-            camera.render(g);
+            //camera.render(g);
             draw(g);
         }
         //
         public void draw(Graphics g) {
             g.setColor(Color.BLACK);
-            g.drawString("FPS: " + fps, 10, 10);
+            g.drawString("FPS: " + fps, 100, 100);
         }
     }
     /** sets the cam to be used for this window (the engine only supports one cam TOTAL, at the moment...) */
@@ -81,14 +125,12 @@ public class App extends JFrame {
         this.camera = camera;
     }
     //
-    public void setKeyListener(KeyListener kl) {
-        this.addKeyListener(kl);
-    }
-    //
     public Panel getPanel() {
         return panel;
     }
-    //
+    // blank because its almost never used but can still be implemented
+    @Override
+    public void keyTyped(KeyEvent e) {}
     /*public void setMouseListener(MouseListener ml) {
         this.addMouseListener(ml);
     }*/

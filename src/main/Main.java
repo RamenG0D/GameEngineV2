@@ -1,57 +1,39 @@
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.WindowEvent;
 import Renders.Camera;
 import Renders.Camera2D;
 import Test.Player;
 import helper.App;
 import helper.Button;
 
-public class Main implements KeyListener {
-    private MainMenu menu = new MainMenu();
+public class Main extends App {
+    private MainMenu menu;
     private Camera cam;
     private Player p;
-    private App app;
     //
     public Main() {
         //
         p = new Player(100, 100);
-        cam = new Camera2D(p, 0 ,0, 800, 600);
-        app = new App("Test Application", 800, 600, cam);
-        app.setKeyListener(this);
-        //
-        double last = System.nanoTime();
-        double MS_PER_UPDATE = 10_000_000.0;
-        double lag = 0.0f;
-        //
-        while(app.state == App.ApplicationState.Running) {
-            double current = System.nanoTime();
-            double elapsed = current - last;
-            last = current;
-            lag += elapsed;
-            //
-            while(lag >= MS_PER_UPDATE) {
-                update(elapsed);
-                lag -= MS_PER_UPDATE;
-            }
-            //
-            render(lag / MS_PER_UPDATE);
-        }
+        cam = new Camera2D(0 ,0, this.getWidth(), this.getHeight());
+        menu = new MainMenu(this.getHeight(), this.getWidth());
         //
     }
-    //
+    @Override
     public void render(double FAS) { // FAS (Frames Ahead Of Schedue)
-        menu.DrawMenu(app.getPanel().getGraphics());
-        app.repaint();
+        if(this.gameState == GameState.Menu) menu.DrawMenu(this.getPanel().getGraphics());
+    }
+    @Override
+    public void update(float delta) { // delta is the time between now and the last frame or the FPS
+        // this method is called as the main logic loop for the game
+        input();
     }
     //
-    public void update(double delta) { // delta is the time between now and the last frame or the FPS
-        // things update here/things in world update here, this also handles application updates
-        app.setFPS(delta);
-        //
-        input();
+    public GameState gameState = GameState.Menu;
+    //
+    public enum GameState {
+        Game,
+        Menu
     }
     //
     public static void main(String[] args) {
@@ -81,17 +63,6 @@ public class Main implements KeyListener {
         if(keycode == KeyEvent.VK_D) {
             d = true;
         }
-        if(keycode == KeyEvent.VK_ESCAPE) {
-            
-        }
-        //
-        app.repaint();
-    }
-    //
-    public void CloseApp() {
-        app.dispatchEvent(
-            new WindowEvent(app, WindowEvent.WINDOW_CLOSING)
-        );
     }
     //
     public void input() {
@@ -111,6 +82,7 @@ public class Main implements KeyListener {
             p.angle -= 5;
             if(p.angle < 0) p.angle += 360;
         }
+        System.out.println("X:" + p.x + " Y: " + p.y);
     }
     //
     @Override
@@ -120,21 +92,23 @@ public class Main implements KeyListener {
         if(e.getKeyCode() == KeyEvent.VK_A) a = false;
         if(e.getKeyCode() == KeyEvent.VK_D) d = false;
     }
-    @Override
-    public void keyTyped(KeyEvent e) {}
     //
     class MainMenu {
-        public Button btn1 = new Button(200, 300, 100, 80);
+        private int width, height;
+        private Button btn1;
         //
-        public MainMenu() {
-            app.add(btn1);
+        public MainMenu(int width, int height) {
+            //
+            btn1 = new Button(200, 300, 100, 80);
+            this.height = height;
+            this.width = width;
             //
         }
         //
         public void DrawMenu(Graphics g) {
             //
             g.setColor(new Color(0,0,0,120));
-            g.fillRect(0,0,app.getWidth(),app.getHeight());
+            g.fillRect(0,0, width, height);
             //
         }
     }
