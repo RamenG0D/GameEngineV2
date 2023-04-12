@@ -5,12 +5,10 @@ import java.util.ArrayList;
 
 public class World { // this class should only STORE DATA about the WORLD!
     private List<Entity2D> entities = new ArrayList<>();
-    //
-    public World() {
-        //
-    }
-    //
-    public Entity2D getEntity(Object entity) {
+    /// responsible for entity management
+    public World() {}
+    /// get entities based on their type
+    public Entity2D getEntity(Entity2D entity) {
         return entities.get(entities.indexOf(entity));
     }
     //

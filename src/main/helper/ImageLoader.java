@@ -11,22 +11,16 @@ public class ImageLoader {
     public ImageLoader(String path, int width, int height) throws IOException {
         //
         File file = new File(path);
-        //
         Image img = ImageIO.read(file);
-        //
         img = img.getScaledInstance(width, height, 0);
-        //
         this.img = img;
     }
     //
     public ImageLoader(String path, int size) throws IOException {
         //
         File file = new File(path);
-        //
         Image img = ImageIO.read(file);
-        //
         img = img.getScaledInstance(size, size, 0);
-        //
         this.img = img;
     }
     //

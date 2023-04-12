@@ -1,9 +1,10 @@
 package helper;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Image;
 
-public abstract class Entity2D implements Drawable {
+public abstract class Entity2D implements Renderable {
     //this class shouldnt contain too much data as individual entities need so specify it themselves
     public Image img;
     public int x;
@@ -17,6 +18,8 @@ public abstract class Entity2D implements Drawable {
     //
     @Override
     public void draw(Graphics g) {
-        //
+        g.setColor(Color.RED);
+        g.drawRect(x, y, 10, 10);
+        g.drawImage(img, x, y, null);
     }
 }
