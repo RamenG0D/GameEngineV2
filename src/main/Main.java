@@ -1,44 +1,37 @@
-import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
-import Renders.Camera;
-import Renders.Camera2D;
 import Test.Player;
 import helper.App;
 import helper.Button;
 
 public class Main extends App {
-    private MainMenu menu;
-    private Camera cam;
+    private MainMenu menu = new MainMenu(this);
     private Player p;
     //
-    public Main() {
+    public Main(String title, int width, int height, Player p/*, Camera cam*/) {
+        super(title, width, height/*, cam*/);
+        this.p = p;
         //
-        p = new Player(100, 100);
-        cam = new Camera2D(0 ,0, this.getWidth(), this.getHeight());
-        menu = new MainMenu(this.getHeight(), this.getWidth());
-        //
+        run();
     }
     @Override
-    public void render(double FAS) { // FAS (Frames Ahead Of Schedue)
-        if(this.gameState == GameState.Menu) menu.DrawMenu(this.getPanel().getGraphics());
+    public void render(Graphics g) { // FAS (Frames Ahead Of Schedue)
+        if(p != null) p.draw(g);
     }
     @Override
     public void update(float delta) { // delta is the time between now and the last frame or the FPS
-        // this method is called as the main logic loop for the game
+        // things update here/things in world update here, this also handles application updates
+        if(gameState == GameState.Menu) menu.show(this.getPanel());
+        this.fps = delta;
         input();
-    }
-    //
-    public GameState gameState = GameState.Menu;
-    //
-    public enum GameState {
-        Game,
-        Menu
     }
     //
     public static void main(String[] args) {
         //
-        new Main();
+        Player p = new Player(100, 100);
+        //Camera cam = new Camera2D(p, 0 ,0, 800, 600);
+        //
+        new Main("Test Application", 800, 600, p/*, cam*/);
         //
     }
     //
@@ -63,15 +56,26 @@ public class Main extends App {
         if(keycode == KeyEvent.VK_D) {
             d = true;
         }
+        if(keycode == KeyEvent.VK_ESCAPE) {
+            gameState = GameState.Menu;
+        }
+        //
     }
     //
-    public void input() {
+    public GameState gameState = GameState.Menu;
+    //
+    public enum GameState {
+        Game,
+        Menu
+    }
+    //
+    public void input() { // ill add a more elagent solution later such as if( keypressed( {CONSTANT}.{KEY} ) )
         if(w) {
             p.x += p.dx*5;
             p.y += p.dy*5;
         }
         if(a) {
-            p.angle += 5;
+            p.angle += 2;
             if(p.angle > 359) p.angle -= 360;
         }
         if(s) {
@@ -79,12 +83,10 @@ public class Main extends App {
             p.y -= p.dy*5;
         }
         if(d) {
-            p.angle -= 5;
+            p.angle -= 2;
             if(p.angle < 0) p.angle += 360;
         }
-        System.out.println("X:" + p.x + " Y: " + p.y);
     }
-    //
     @Override
     public void keyReleased(KeyEvent e) {
         if(e.getKeyCode() == KeyEvent.VK_W) w = false;
@@ -94,22 +96,33 @@ public class Main extends App {
     }
     //
     class MainMenu {
-        private int width, height;
-        private Button btn1;
+        public Button[] btns = new Button[] {
+            new Button("exit",40, 100, 100, 80)
+        };
         //
-        public MainMenu(int width, int height) {
+        public MainMenu(App app) {
+            for(Button btn : btns) {
+                btn.setLocation(btn.x, btn.y);
+                btn.setSize(btn.width, btn.height);
+                app.getPanel().add(btn);
+                btn.setVisible(false);
+            }
             //
-            btn1 = new Button(200, 300, 100, 80);
-            this.height = height;
-            this.width = width;
-            //
+            btns[0].addActionListener((e) -> {
+                CloseApp();
+            });
         }
         //
-        public void DrawMenu(Graphics g) {
-            //
-            g.setColor(new Color(0,0,0,120));
-            g.fillRect(0,0, width, height);
-            //
+        public void hide(Panel p) {
+            for (Button button : btns) {
+                button.setVisible(false);
+            }
+        }
+        //
+        public void show(Panel p) {
+            for (Button button : btns) {
+                button.setVisible(true);
+            }
         }
     }
     //
