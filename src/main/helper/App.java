@@ -12,7 +12,7 @@ import Renders.Camera;
 
 public abstract class App extends JFrame implements KeyListener {
     private Panel panel = new Panel();
-    private Camera camera; // will re-implement later
+    //private Camera camera; // will re-implement later
     protected double fps;
     /**
      * the currently initialized Application's State for general use and modification/checking
@@ -62,7 +62,7 @@ public abstract class App extends JFrame implements KeyListener {
     //
     public void run() {
         double last = System.nanoTime();
-        double MS_PER_UPDATE = 20_000_000.0;
+        double MS_PER_UPDATE = 25_000_000.0;
         double lag = 0.0f;
         //
         while(state == App.ApplicationState.Running) {
@@ -107,9 +107,9 @@ public abstract class App extends JFrame implements KeyListener {
         }
     }
     /** sets the cam to be used for this window (the engine only supports one cam TOTAL, at the moment...) */
-    public void setCamera(Camera camera) {
+    /*public void setCamera(Camera camera) {
         this.camera = camera;
-    }
+    }*/
     //
     public void setKeyListener(KeyListener kl) {
         this.addKeyListener(kl);
