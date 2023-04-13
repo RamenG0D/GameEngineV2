@@ -1,62 +1,37 @@
-import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.WindowEvent;
-import Renders.Camera;
-import Renders.Camera2D;
 import Test.Player;
 import helper.App;
 import helper.Button;
 
-public class Main implements KeyListener {
-    private MainMenu menu = new MainMenu();
-    private Camera cam;
+public class Main extends App {
+    private MainMenu menu = new MainMenu(this);
     private Player p;
-    private App app;
     //
-    public Main() {
+    public Main(String title, int width, int height, Player p/*, Camera cam*/) {
+        super(title, width, height/*, cam*/);
+        this.p = p;
         //
-        p = new Player(100, 100);
-        cam = new Camera2D(p, 0 ,0, 800, 600);
-        app = new App("Test Application", 800, 600, cam);
-        app.setKeyListener(this);
-        //
-        double last = System.nanoTime();
-        double MS_PER_UPDATE = 10_000_000.0;
-        double lag = 0.0f;
-        //
-        while(app.state == App.ApplicationState.Running) {
-            double current = System.nanoTime();
-            double elapsed = current - last;
-            last = current;
-            lag += elapsed;
-            //
-            while(lag >= MS_PER_UPDATE) {
-                update(elapsed);
-                lag -= MS_PER_UPDATE;
-            }
-            //
-            render(lag / MS_PER_UPDATE);
-        }
-        //
+        run();
     }
-    //
-    public void render(double FAS) { // FAS (Frames Ahead Of Schedue)
-        menu.DrawMenu(app.getPanel().getGraphics());
-        app.repaint();
+    @Override
+    public void render(Graphics g) { // FAS (Frames Ahead Of Schedue)
+        if(p != null) p.draw(g);
     }
-    //
-    public void update(double delta) { // delta is the time between now and the last frame or the FPS
+    @Override
+    public void update(float delta) { // delta is the time between now and the last frame or the FPS
         // things update here/things in world update here, this also handles application updates
-        app.setFPS(delta);
-        //
+        if(gameState == GameState.Menu) menu.show(this.getPanel());
+        this.fps = delta;
         input();
     }
     //
     public static void main(String[] args) {
         //
-        new Main();
+        Player p = new Player(100, 100);
+        //Camera cam = new Camera2D(p, 0 ,0, 800, 600);
+        //
+        new Main("Test Application", 800, 600, p/*, cam*/);
         //
     }
     //
@@ -82,25 +57,25 @@ public class Main implements KeyListener {
             d = true;
         }
         if(keycode == KeyEvent.VK_ESCAPE) {
-            
+            gameState = GameState.Menu;
         }
         //
-        app.repaint();
     }
     //
-    public void CloseApp() {
-        app.dispatchEvent(
-            new WindowEvent(app, WindowEvent.WINDOW_CLOSING)
-        );
+    public GameState gameState = GameState.Menu;
+    //
+    public enum GameState {
+        Game,
+        Menu
     }
     //
-    public void input() {
+    public void input() { // ill add a more elagent solution later such as if( keypressed( {CONSTANT}.{KEY} ) )
         if(w) {
             p.x += p.dx*5;
             p.y += p.dy*5;
         }
         if(a) {
-            p.angle += 5;
+            p.angle += 2;
             if(p.angle > 359) p.angle -= 360;
         }
         if(s) {
@@ -108,11 +83,10 @@ public class Main implements KeyListener {
             p.y -= p.dy*5;
         }
         if(d) {
-            p.angle -= 5;
+            p.angle -= 2;
             if(p.angle < 0) p.angle += 360;
         }
     }
-    //
     @Override
     public void keyReleased(KeyEvent e) {
         if(e.getKeyCode() == KeyEvent.VK_W) w = false;
@@ -120,22 +94,35 @@ public class Main implements KeyListener {
         if(e.getKeyCode() == KeyEvent.VK_A) a = false;
         if(e.getKeyCode() == KeyEvent.VK_D) d = false;
     }
-    @Override
-    public void keyTyped(KeyEvent e) {}
     //
     class MainMenu {
-        public Button btn1 = new Button(200, 300, 100, 80);
+        public Button[] btns = new Button[] {
+            new Button("exit",40, 100, 100, 80)
+        };
         //
-        public MainMenu() {
-            app.add(btn1);
+        public MainMenu(App app) {
+            for(Button btn : btns) {
+                btn.setLocation(btn.x, btn.y);
+                btn.setSize(btn.width, btn.height);
+                app.getPanel().add(btn);
+                btn.setVisible(false);
+            }
             //
+            btns[0].addActionListener((e) -> {
+                CloseApp();
+            });
         }
         //
-        public void DrawMenu(Graphics g) {
-            //
-            g.setColor(new Color(0,0,0,120));
-            g.fillRect(0,0,app.getWidth(),app.getHeight());
-            //
+        public void hide(Panel p) {
+            for (Button button : btns) {
+                button.setVisible(false);
+            }
+        }
+        //
+        public void show(Panel p) {
+            for (Button button : btns) {
+                button.setVisible(true);
+            }
         }
     }
     //
