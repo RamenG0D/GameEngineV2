@@ -1,64 +1,32 @@
+import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.event.KeyEvent;
+import javax.swing.JLabel;
 import Test.Player;
 import helper.App;
 import helper.Button;
 
 public class Main extends App {
-    private MainMenu menu = new MainMenu(this);
-    private Player p;
+    private MainMenu menu = new MainMenu();
+    private Player p = new Player(100, 100);
     //
-    public Main(String title, int width, int height, Player p/*, Camera cam*/) {
+    public Main(String title, int width, int height/*, Camera cam*/) {
         super(title, width, height/*, cam*/);
-        this.p = p;
-        //
+        //addCustomKey("Q", KeyEvent.VK_Q);
         run();
     }
     @Override
     public void render(Graphics g) { // FAS (Frames Ahead Of Schedue)
-        if(p != null) p.draw(g);
+        if(p!=null&&gameState==GameState.Game) p.draw(g);
     }
     @Override
     public void update(float delta) { // delta is the time between now and the last frame or the FPS
-        // things update here/things in world update here, this also handles application updates
-        if(gameState == GameState.Menu) menu.show(this.getPanel());
-        this.fps = delta;
-        input();
+        if(gameState == GameState.Menu) { menu.show(); }
+        else { menu.hide(); }
     }
     //
     public static void main(String[] args) {
-        //
-        Player p = new Player(100, 100);
         //Camera cam = new Camera2D(p, 0 ,0, 800, 600);
-        //
-        new Main("Test Application", 800, 600, p/*, cam*/);
-        //
-    }
-    //
-    boolean w = false;
-    boolean a = false;
-    boolean s = false;
-    boolean d = false;
-    //
-    @Override
-    public void keyPressed(KeyEvent e) {
-        int keycode = e.getKeyCode();
-        //
-        if(keycode == KeyEvent.VK_W) {
-            w = true;
-        }
-        if(keycode == KeyEvent.VK_A) {
-            a = true;
-        }
-        if(keycode == KeyEvent.VK_S) {
-            s = true;
-        }
-        if(keycode == KeyEvent.VK_D) {
-            d = true;
-        }
-        if(keycode == KeyEvent.VK_ESCAPE) {
-            gameState = GameState.Menu;
-        }
+        new Main("Test Application", 800, 600/*, cam*/);
         //
     }
     //
@@ -69,60 +37,72 @@ public class Main extends App {
         Menu
     }
     //
-    public void input() { // ill add a more elagent solution later such as if( keypressed( {CONSTANT}.{KEY} ) )
-        if(w) {
+    @Override
+    public void input() { // an elagent solution such as if( keypressed( "{KEY}" ) ) {KEY} being the name / letter of the key
+        if(keypressed("w")) {
             p.x += p.dx*5;
             p.y += p.dy*5;
         }
-        if(a) {
+        if(keypressed("a")) {
             p.angle += 2;
-            if(p.angle > 359) p.angle -= 360;
+            FixAng(p.angle);
         }
-        if(s) {
+        if(keypressed("s")) {
             p.x -= p.dx*5;
             p.y -= p.dy*5;
         }
-        if(d) {
+        if(keypressed("d")) {
             p.angle -= 2;
-            if(p.angle < 0) p.angle += 360;
+            FixAng(p.angle);
         }
-    }
-    @Override
-    public void keyReleased(KeyEvent e) {
-        if(e.getKeyCode() == KeyEvent.VK_W) w = false;
-        if(e.getKeyCode() == KeyEvent.VK_S) s = false;
-        if(e.getKeyCode() == KeyEvent.VK_A) a = false;
-        if(e.getKeyCode() == KeyEvent.VK_D) d = false;
+        /*if(m.isClicked()) {
+            System.out.println("clicking");
+        }*/
     }
     //
-    class MainMenu {
-        public Button[] btns = new Button[] {
-            new Button("exit",40, 100, 100, 80)
-        };
+    private void FixAng(double a) {
+        if(a < 0) a += 360;
+        if(a > 359) a -= 360;
+    }
+    //
+    private void DegToRad(double a) {
         //
-        public MainMenu(App app) {
-            for(Button btn : btns) {
-                btn.setLocation(btn.x, btn.y);
-                btn.setSize(btn.width, btn.height);
-                app.getPanel().add(btn);
-                btn.setVisible(false);
-            }
+    }
+    //
+    public class MainMenu {
+        private JLabel label;
+        private Button btn;
+        //
+        public MainMenu() {
+            btn = new Button("exit",40, 100, 100, 100);
+            label = new JLabel("TEST MENU");
             //
-            btns[0].addActionListener((e) -> {
-                CloseApp();
+            btn.addActionListener((e) -> {
+                //CloseApp();
+                gameState = GameState.Game;
             });
+            //
+            getPanel().add(btn);
+            getPanel().add(label);
+            btn.setVisible(false);
         }
         //
-        public void hide(Panel p) {
-            for (Button button : btns) {
-                button.setVisible(false);
-            }
+        public void show() {
+            btn.setVisible(true);
+            btn.setSize(btn.width, btn.height);
+            btn.setLocation(btn.x, btn.y);
+            //
+            getPanel().setBackground(Color.lightGray);
+            //
+            repaint();
         }
         //
-        public void show(Panel p) {
-            for (Button button : btns) {
-                button.setVisible(true);
-            }
+        public void hide() {
+            btn.setVisible(false);
+            //
+            getPanel().setBackground(Color.GRAY);
+            //
+            repaint();
         }
     }
     //

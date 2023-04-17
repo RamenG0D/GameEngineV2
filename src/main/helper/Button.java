@@ -19,6 +19,10 @@ public class Button extends JButton {
         //
         this.setBounds(x, y, width, height);
         this.setText(text);
+        this.height = height;
+        this.width =  width;
+        this.x = x;
+        this.y = y;
         //
     }
     /**
@@ -31,7 +35,13 @@ public class Button extends JButton {
     public Button(String text, int x, int y, int size) {
         //
         this.setSize(new Dimension(size, size));
+        this.setLocation(x, y);
         this.setText(text);
+        //
+        this.height = size;
+        this.width =  size;
+        this.x = x;
+        this.y = y;
         //
     }
     //
@@ -51,6 +61,17 @@ public class Button extends JButton {
         this.setIcon(new ImageIcon(buttonIcon));
         this.setText(text);
         //
+        this.height = height;
+        this.width =  width;
+        this.x = x;
+        this.y = y;
+        //
     }
     //
+    public Button(String title, int x, int y) {
+        //
+        this.setLocation(x, y);
+        this.setText(title);
+        //
+    }
 }
