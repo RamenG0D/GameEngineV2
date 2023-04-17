@@ -41,12 +41,12 @@ public abstract class App extends JFrame implements KeyListener, MouseInputListe
     }
     //
     private void init(String title, int width, int height) {
-        this.setSize(width, height);
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.setLocationRelativeTo(null);
-        this.setTitle(title);
+        this.setSize(width, height);
         this.addMouseListener(this);
         this.addKeyListener(this);
+        this.setTitle(title);
         this.setFocusable(true);
         //
         panel.setSize(getWidth(), getHeight());
@@ -104,7 +104,7 @@ public abstract class App extends JFrame implements KeyListener, MouseInputListe
     //
     public abstract void update(float delta); // delta is the time between now andd the last frame
     public abstract void render(Graphics g); // used for all things rendering
-    public abstract void input(); // called continuosly but this function will control (keyboard / mouse) input
+    public abstract void input(); // called continuosly but this function will control the flow of (keyboard / mouse) input events
     //
     public void CloseApp() {
         this.dispatchEvent(
@@ -214,7 +214,6 @@ public abstract class App extends JFrame implements KeyListener, MouseInputListe
     public void setMouseListener(MouseListener ml) {
         this.panel.addMouseListener(ml);
     }
-    //
     @Override
     public void keyPressed(KeyEvent e) {
         toggle(e.getKeyCode(), true);
@@ -285,7 +284,6 @@ public abstract class App extends JFrame implements KeyListener, MouseInputListe
     @Override
     public void mouseReleased(MouseEvent e) {
         //
-        System.out.println("release");
         m.clicked(false);
         //m.dragged(false);
         m.pressed(false);

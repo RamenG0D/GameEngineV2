@@ -14,10 +14,9 @@ public class Player {
         this.dx = Math.cos(angle*Math.PI/180.0) * 5;
         this.dy = -Math.sin(angle*Math.PI/180.0) * 5;
         //
-        
     }
     //
-    public void draw(Graphics g) {
+    public void render(Graphics g) {
         g.setColor(Color.RED);
         g.fillRect(x, y, 15, 15);
         //

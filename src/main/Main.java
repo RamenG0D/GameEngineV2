@@ -1,5 +1,7 @@
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.event.KeyEvent;
+
 import javax.swing.JLabel;
 import Test.Player;
 import helper.App;
@@ -11,12 +13,13 @@ public class Main extends App {
     //
     public Main(String title, int width, int height/*, Camera cam*/) {
         super(title, width, height/*, cam*/);
-        //addCustomKey("Q", KeyEvent.VK_Q);
+        //
+        addCustomKey("Q", KeyEvent.VK_Q); // Example of how to add a new key other than the defaults -> [w,a,s,d,esc,spc(space)]
         run();
     }
     @Override
     public void render(Graphics g) { // FAS (Frames Ahead Of Schedue)
-        if(p!=null&&gameState==GameState.Game) p.draw(g);
+        if(p!=null&&gameState==GameState.Game) p.render(g);
     }
     @Override
     public void update(float delta) { // delta is the time between now and the last frame or the FPS

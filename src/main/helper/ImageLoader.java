@@ -9,7 +9,6 @@ public class ImageLoader {
     private Image img;
     //
     public ImageLoader(String path, int width, int height) throws IOException {
-        //
         File file = new File(path);
         Image img = ImageIO.read(file);
         img = img.getScaledInstance(width, height, 0);
@@ -17,7 +16,6 @@ public class ImageLoader {
     }
     //
     public ImageLoader(String path, int size) throws IOException {
-        //
         File file = new File(path);
         Image img = ImageIO.read(file);
         img = img.getScaledInstance(size, size, 0);
