@@ -5,17 +5,18 @@ import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
 import java.util.HashMap;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.event.MouseInputListener;
 
+import Renders.Screen;
+
 public abstract class App extends JFrame implements KeyListener, MouseInputListener {
     private HashMap<String, Key> keys = new HashMap<>(); // used to find the new keys keycode
     protected Panel panel = new Panel();
-    //private Camera camera; // will re-implement later
+    public Mouse mouse = new Mouse();
     protected double fps;
     /**
      * the currently initialized Application's State for general use and modification/checking
@@ -42,15 +43,18 @@ public abstract class App extends JFrame implements KeyListener, MouseInputListe
     //
     private void init(String title, int width, int height) {
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
-        this.setLocationRelativeTo(null);
         this.setSize(width, height);
+        this.setLocationRelativeTo(null);
+        this.addMouseMotionListener(this);
         this.addMouseListener(this);
         this.addKeyListener(this);
         this.setTitle(title);
         this.setFocusable(true);
+        this.setLayout(null);
         //
         panel.setSize(getWidth(), getHeight());
         this.add(panel);
+        this.panel.setFocusable(false);
     }
     //
     private void init() {
@@ -58,12 +62,15 @@ public abstract class App extends JFrame implements KeyListener, MouseInputListe
         this.setSize(400, 400);
         this.setLocationRelativeTo(null);
         this.setTitle("Application"); // default Title
-        this.setMouseListener(this);
-        this.setKeyListener(this);
+        this.addMouseMotionListener(this);
+        this.addMouseListener(this);
+        this.addKeyListener(this);
         this.setFocusable(true);
+        this.setLayout(null);
         //
         panel.setSize(getWidth(), getWidth());
         this.add(panel);
+        this.panel.setFocusable(false);
     }
     //
     public void run() {
@@ -78,16 +85,17 @@ public abstract class App extends JFrame implements KeyListener, MouseInputListe
             last = now;
             //
             if(delta >= 1) {
-                update((float)delta); input();
+                input(); update((float)delta);
                 delta -= 1;
             }
             //
             render(panel.getGraphics());
+            panel.paintImmediately(panel.getBounds());
             fps++;
             //
             if(System.currentTimeMillis() - lastMs >= 1000) {
                 lastMs += 1000;
-                fps = 0;            
+                fps = 0;
             }
             //
         }
@@ -115,22 +123,9 @@ public abstract class App extends JFrame implements KeyListener, MouseInputListe
     public void keyTyped(KeyEvent e) {}
     //
     public void toggle(int keycode, boolean isPressed) {
-        if(keycode == KeyEvent.VK_W || keycode == KeyEvent.VK_UP) {
-            keys.get("W").toggle(isPressed);
-        }
-        if(keycode == KeyEvent.VK_A || keycode == KeyEvent.VK_LEFT) {
-            keys.get("A").toggle(isPressed);
-        }
-        if(keycode == KeyEvent.VK_S || keycode == KeyEvent.VK_DOWN) {
-            keys.get("S").toggle(isPressed);
-        }
-        if(keycode == KeyEvent.VK_D || keycode == KeyEvent.VK_RIGHT) {
-            keys.get("D").toggle(isPressed);
-        }
-        //
         keys.forEach(
             (keyName, key) -> {
-                if(key.keycode == keycode) key.pressed = isPressed;
+                if(key.keycode == keycode) key.toggle(isPressed);
             }
         );
     }
@@ -149,8 +144,6 @@ public abstract class App extends JFrame implements KeyListener, MouseInputListe
             g.drawString("FPS: " + fps, 10, 10); // not the actual FPS... for now at least, not sure how to compute the FPS of the app / gameloop currently
         }
     }
-    //
-    public Mouse m = new Mouse();
     /** used to debug whether or not keys are pressed */
     public void DebugKeys() {
         keys.forEach(
@@ -161,58 +154,31 @@ public abstract class App extends JFrame implements KeyListener, MouseInputListe
     }
     /** used to debug the mouse position */
     public void DebugMouse() {
-        System.out.println("mouse X: "+ m.x +" mouse Y: "+m.y+" mouse click X: "+m.cX+" mouse click Y: "+m.cY);
-        System.out.println("debug mouse");
-    }
-    //
-    public class Mouse {
-        //private boolean dragged = false; // dragged is when the mouse is clicked and HELD while being moved
-        private boolean clicked = false; // when mouse is clicked...
-        private boolean pressed = false; // when the mouse is held down
-        private int x, y, cX, cY; // lx is the last x and ly is last y -- cX is click x and cY is clicked y
-        //
-        public void pressed(boolean pressed) {
-            this.pressed = pressed;
-        }
-        //
-        public void clicked(boolean isClicked) {
-            this.clicked = isClicked;
-        }
-        //
-        /*public void dragged(boolean dragged) {
-            this.dragged = dragged;
-        }*/
-        //
-        public int getMouseX() {
-            return x;
-        }
-        //
-        public int getMouseY() {
-            return y;
-        }
-        //
-        /*public boolean isDragged() {
-            return dragged;
-        }*/
-        //
-        public boolean isClicked() {
-            return clicked;
-        }
+        System.out.println("mouse X: "+ mouse.x +" mouse Y: "+mouse.y+" mouse click X: "+mouse.cX+" mouse click Y: "+mouse.cY);
     }
     /** sets the cam to be used for this window (the engine only supports one cam TOTAL, at the moment...) */
     /*public void setCamera(Camera camera) {
         this.camera = camera;
     }*/
-    public void setKeyListener(KeyListener kl) {
-        this.addKeyListener(kl);
+    public class Mouse {
+        private int x, y, cX, cY;
+        //
+        public int getX() {
+            return x;
+        }
+        public int getY() {
+            return y;
+        }
+        public int getCX() {
+            return cX;
+        }
+        public int getCY() {
+            return cY;
+        }
     }
     //
     public Panel getPanel() {
         return panel;
-    }
-    //
-    public void setMouseListener(MouseListener ml) {
-        this.panel.addMouseListener(ml);
     }
     @Override
     public void keyPressed(KeyEvent e) {
@@ -261,16 +227,8 @@ public abstract class App extends JFrame implements KeyListener, MouseInputListe
     @Override
     public void mouseClicked(MouseEvent e) {
         //
-        m.cX = e.getX();
-        m.cY = e.getY();
-        //
-    }
-    @Override
-    public void mouseMoved(MouseEvent e) {
-        //
-        m.x = e.getX();
-        m.y = e.getY();
-        System.out.println("x: "+m.x+" y: "+m.y);
+        mouse.cX = e.getX();
+        mouse.cY = e.getY();
         //
     }
     @Override
@@ -282,17 +240,21 @@ public abstract class App extends JFrame implements KeyListener, MouseInputListe
     @Override
     public void mousePressed(MouseEvent e) {}
     @Override
-    public void mouseReleased(MouseEvent e) {
+    public void mouseReleased(MouseEvent e) {}
+    @Override
+    public void mouseMoved(MouseEvent e) {
         //
-        m.clicked(false);
-        //m.dragged(false);
-        m.pressed(false);
+        mouse.x = e.getX();
+        mouse.y = e.getY();
         //
     }
     @Override
     public void paint(Graphics g) {
         super.paint(g);
         //
+        if(panel.getWidth() != getWidth() || panel.getHeight() != getHeight()) {
+            panel.setSize(getWidth(), getHeight());
+        }
         panel.paintImmediately(getBounds());
     }
     /**

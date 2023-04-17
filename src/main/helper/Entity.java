@@ -1,16 +1,12 @@
 package helper;
-import java.awt.Image;
 
 import Renders.Screen;
 
-public abstract class Entity2D {
+public abstract class Entity {
     //this class shouldnt contain too much data as individual entities need so specify it themselves
-    public Image img;
-    public int x;
-    public int y;
+    public int x, y;
     //
-    public Entity2D(Image img, int x, int y) {
-        this.img = img;
+    public Entity(int x, int y) {
         this.x = x;
         this.y = y;
     }

@@ -8,20 +8,20 @@ import java.util.List;
 import javax.imageio.ImageIO;
 
 import Renders.Screen;
-import helper.Entity2D;
+import helper.Entity;
 
 public class Level { // TODO rework this class and make many changes
     private byte[] tiles;
     public int width;
     public int height;
-    private List<Entity2D> entities = new ArrayList<>();
+    private List<Entity> entities = new ArrayList<>();
     private String imagePath;
     private BufferedImage image;
 
     public Level(String imagePath) {
         if (imagePath != null) {
             this.imagePath = imagePath;
-            this.loadLevelFromFile();
+            //this.loadLevelFromFile();
         } else {
             this.width = 64;
             this.height = 64;
@@ -30,7 +30,7 @@ public class Level { // TODO rework this class and make many changes
         }
     }
 
-    private void loadLevelFromFile() {
+    /*private void loadLevelFromFile() {
         try {
             this.image = ImageIO.read(Level.class.getResource(this.imagePath));
             this.width = this.image.getWidth();
@@ -40,9 +40,9 @@ public class Level { // TODO rework this class and make many changes
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
+    }*/
 
-    private void loadTiles() {
+    /*private void loadTiles() {
         int[] tileColours = this.image.getRGB(0, 0, width, height, null, 0, width);
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
@@ -54,7 +54,7 @@ public class Level { // TODO rework this class and make many changes
                 }
             }
         }
-    }
+    }*/
     //
     @SuppressWarnings("unused")
     private void saveLevelToFile() {
@@ -65,17 +65,17 @@ public class Level { // TODO rework this class and make many changes
         }
     }
     //
-    public void alterTile(int x, int y, Tile newTile) {
+    /*public void alterTile(int x, int y, Tile newTile) {
         this.tiles[x + y * width] = newTile.getId();
         image.setRGB(x, y, newTile.getLevelColour());
-    }
+    }*/
     //
-    public synchronized List<Entity2D> getEntities() {
+    public synchronized List<Entity> getEntities() {
         return this.entities;
     }
     //
     public void tick() {
-        for (Entity2D e : getEntities()) {
+        for (Entity e : getEntities()) {
             //e.tick();
         }
 
@@ -83,7 +83,7 @@ public class Level { // TODO rework this class and make many changes
             if (t == null) {
                 break;
             }
-            t.tick();
+            t.update();
         }
     }
     //
@@ -105,12 +105,12 @@ public class Level { // TODO rework this class and make many changes
     }
     //
     public void renderEntities(Screen screen) {
-        for(Entity2D e : getEntities()) {
+        for(Entity e : getEntities()) {
             e.render(screen);
         }
     }
     //
-    public synchronized void addEntity(Entity2D entity) {
+    public synchronized void addEntity(Entity entity) {
         this.getEntities().add(entity);
     }
 }
