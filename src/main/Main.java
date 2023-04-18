@@ -1,19 +1,12 @@
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.Shape;
 import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
-import java.awt.image.Raster;
-import java.io.IOException;
 
-import javax.swing.JLabel;
 import Test.Player;
 import helper.App;
 import helper.Button;
-import helper.ImageLoader;
 
 public class Main extends App {
     private MainMenu menu = new MainMenu();
@@ -27,25 +20,10 @@ public class Main extends App {
         run();
     }
     @Override
-    public void render(Graphics g) {
-        if(p!=null&&gameState==GameState.Game) p.render(g);
-        /*try {
-            image = ImageLoader.getImage("assets/Ball.png");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }*/
-        /*if(image == null) return;
-        //
-        int[] pixels = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
-        int[] colorBuff = image.getRGB(0, 0, image.getWidth(), image.getHeight(), pixels, 0, image.getWidth());
-        //
-        for(int p : pixels) {
-            p = 255;
+    public void render(float delta) {
+        if(delta > 0.25) {
+            p.render(panel.getGraphics());
         }
-        //
-        image.setRGB(0, 0, image.getWidth(), image.getHeight(), colorBuff, 0, image.getWidth());
-
-        g.drawImage(image, 0, 0, null);*/
     }
     @Override
     public void update(float delta) { // delta is the time between now and the last frame or the FPS
@@ -85,6 +63,23 @@ public class Main extends App {
         if(keypressed("esc")) {
             gameState = GameState.Menu;
         }
+    }
+    //
+    public void render() {
+        Graphics g = panel.getGraphics();
+        if(image == null) return;
+        //
+        int[] pixels = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
+        //
+        for(int xx = 0; xx < 10000000; xx++) {
+            for(int yy = 0; yy < 1000000; yy++) {
+                //
+            }
+        }
+        //
+        g.drawImage(image, 0, 0, null);
+        //
+        g.dispose();
     }
     //
     private void FixAng(double a) {

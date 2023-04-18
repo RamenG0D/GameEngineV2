@@ -89,7 +89,7 @@ public abstract class App extends JFrame implements KeyListener, MouseInputListe
                 delta -= 1;
             }
             //
-            render(panel.getGraphics());
+            render((float)delta);
             panel.paintImmediately(panel.getBounds());
             fps++;
             //
@@ -111,7 +111,7 @@ public abstract class App extends JFrame implements KeyListener, MouseInputListe
     }
     //
     public abstract void update(float delta); // delta is the time between now andd the last frame
-    public abstract void render(Graphics g); // used for all things rendering
+    public abstract void render(float delta); // used for all things rendering
     public abstract void input(); // called continuosly but this function will control the flow of (keyboard / mouse) input events
     //
     public void CloseApp() {
