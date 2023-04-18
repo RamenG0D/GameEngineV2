@@ -6,10 +6,12 @@ Test\Player.class
 Main$GameState.class
 Renders\Camera.class
 Renders\Camera3D.class
+helper\App$Mouse.class
 Renders\Screen.class
 helper\ImageLoader.class
 helper\World.class
 Main.class
+helper\Entity.class
 Renders\Camera2D.class
 Level\Level.class
 helper\App.class

@@ -1,19 +1,10 @@
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.Shape;
 import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferInt;
-import java.awt.image.Raster;
-import java.io.IOException;
-
-import javax.swing.JLabel;
 import Test.Player;
 import helper.App;
 import helper.Button;
-import helper.ImageLoader;
 
 public class Main extends App {
     private MainMenu menu = new MainMenu();
@@ -27,8 +18,8 @@ public class Main extends App {
         run();
     }
     @Override
-    public void render(Graphics g) {
-        if(p!=null&&gameState==GameState.Game) p.render(g);
+    public void render() {
+        //if(p!=null&&gameState==GameState.Game) p.render(g);
         /*try {
             image = ImageLoader.getImage("assets/Ball.png");
         } catch (IOException e) {
@@ -125,4 +116,9 @@ public class Main extends App {
         }
     }
     //
+    @Override
+    public void render(Graphics g) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'render'");
+    }
 }

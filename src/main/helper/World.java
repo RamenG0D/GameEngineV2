@@ -1,8 +1,5 @@
 package helper;
 
-import java.util.List;
-import java.util.ArrayList;
-
 public class World { // this class should only STORE DATA about the WORLD!
     //private List<Entity2D> entities = new ArrayList<>();
     //private List<> WorldData = new ArrayList<>();

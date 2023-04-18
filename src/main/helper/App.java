@@ -11,13 +11,11 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.event.MouseInputListener;
 
-import Renders.Screen;
-
-public abstract class App extends JFrame implements KeyListener, MouseInputListener {
+public abstract class App extends JFrame implements KeyListener, MouseInputListener, Runnable {
     private HashMap<String, Key> keys = new HashMap<>(); // used to find the new keys keycode
     protected Panel panel = new Panel();
     public Mouse mouse = new Mouse();
-    protected double fps;
+    protected int fps, highestFPS;
     /**
      * the currently initialized Application's State for general use and modification/checking
      */
@@ -54,7 +52,6 @@ public abstract class App extends JFrame implements KeyListener, MouseInputListe
         //
         panel.setSize(getWidth(), getHeight());
         this.add(panel);
-        this.panel.setFocusable(false);
     }
     //
     private void init() {
@@ -70,36 +67,78 @@ public abstract class App extends JFrame implements KeyListener, MouseInputListe
         //
         panel.setSize(getWidth(), getWidth());
         this.add(panel);
-        this.panel.setFocusable(false);
     }
     //
     public void run() {
+        final double desiredFPS = 100.0, nsPerTick = 1000000000D / desiredFPS;
         long lastMs = System.currentTimeMillis();
-        double nsPerTick = 1000000000D / 60D;
         long last = System.nanoTime();
-        double delta = 0.0;
+        double delta = 0.0, elapsed = 0.0;
         //
         while(state == App.ApplicationState.Running) {
             long now = System.nanoTime();
-            delta += (now - last) / nsPerTick;
+            elapsed = now - last;
             last = now;
+            //
+            delta += elapsed / nsPerTick;
             //
             if(delta >= 1) {
                 input(); update((float)delta);
-                delta -= 1;
+                delta--;
             }
             //
             render(panel.getGraphics());
-            panel.paintImmediately(panel.getBounds());
+            panel.repaint();
             fps++;
             //
-            if(System.currentTimeMillis() - lastMs >= 1000) {
-                lastMs += 1000;
-                fps = 0;
-            }
+            if(highestFPS < fps) highestFPS = fps;
             //
+            if(System.currentTimeMillis() - lastMs >= 1000) 
+            {lastMs += 1000; fps = 0;}
+            //
+            try{
+                double sleepTime = (last - System.nanoTime() + nsPerTick) / 1_000_000;
+                Thread.sleep((long)sleepTime);
+            }catch(Exception e){}
         }
     }
+    //
+    /*public void run() {
+        long last = System.nanoTime(), lastMs = System.currentTimeMillis();
+        final int TARGET_FPS = 1000;
+        final long nsPerTick = 1000000000 / TARGET_FPS;
+        long lastFpsTime = 0;
+        //
+        while(true) {
+            long now = System.nanoTime();
+            long updateLength = now - last;
+            last = now;
+            double delta = updateLength / ((double)nsPerTick);
+
+            lastFpsTime += updateLength;
+            if(lastFpsTime >= 1000000000){
+                lastFpsTime = 0;
+            }
+
+            if(delta >= 1) {
+                update((float)delta);
+                delta--;
+            }
+
+            render(panel.getGraphics());
+            panel.paintImmediately(panel.getBounds());
+            fps++;
+            
+            if(highestFPS < fps) highestFPS = fps;
+
+            if(System.currentTimeMillis() - lastMs >= 1000) 
+            {lastMs += 1000; fps = 0;}
+
+            try{
+                Thread.sleep((long)(last - System.nanoTime() + nsPerTick) / 1_000_000);
+            }catch(Exception e){}
+        }
+    }*/
     //
     private void setupKeys() {
         keys.put("ESC", new Key(KeyEvent.VK_ESCAPE, false));
@@ -111,7 +150,8 @@ public abstract class App extends JFrame implements KeyListener, MouseInputListe
     }
     //
     public abstract void update(float delta); // delta is the time between now andd the last frame
-    public abstract void render(Graphics g); // used for all things rendering
+    public abstract void render(Graphics g);
+    public abstract void render(); // used for all things rendering
     public abstract void input(); // called continuosly but this function will control the flow of (keyboard / mouse) input events
     //
     public void CloseApp() {
@@ -141,7 +181,7 @@ public abstract class App extends JFrame implements KeyListener, MouseInputListe
         //
         public void draw(Graphics g) {
             g.setColor(Color.BLACK);
-            g.drawString("FPS: " + fps, 10, 10); // not the actual FPS... for now at least, not sure how to compute the FPS of the app / gameloop currently
+            g.drawString("FPS: " + fps + "     TopFPS: " + highestFPS, 10, 10); // not the actual FPS... for now at least, not sure how to compute the FPS of the app / gameloop currently
         }
     }
     /** used to debug whether or not keys are pressed */

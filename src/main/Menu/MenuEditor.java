@@ -1,17 +1,12 @@
 package Menu;
 
 import java.awt.Color;
-import java.awt.Dialog;
-import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferInt;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-
 import helper.App;
 import helper.Button;
 
@@ -51,8 +46,22 @@ public class MenuEditor extends App {
     }
     Button b;
     //
+    private BufferedImage img;
+    private int[] pixels;
     @Override
-    public void render(Graphics g) {}
+    public void render(Graphics g) {
+        //
+        if(g == null) return;
+        //
+        img = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_RGB);
+        //
+        pixels = ((DataBufferInt)img.getRaster().getDataBuffer()).getData();
+        //
+        for(int i = 1400; i < pixels.length; i++) {
+            pixels[100] = -231213144;
+        }
+        //g.drawImage(img, 0, 0, null);
+    }
     @Override
     public void update(float delta) {
         b.setSize(b.width, b.height);
@@ -81,12 +90,14 @@ public class MenuEditor extends App {
             tmp.x += 1;
         }
         if(keypressed("spc")) {
-            box = new JDialog(new JFrame("IDK")); // "Pressing escape will exit and save this menu/layout, Are you sure"
-            box.setVisible(true);
+            //
         }
-        DebugKeys();
         //
         tmp.repaint();
     }
-    private static JDialog box;
+    @Override
+    public void render() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'render'");
+    }
 }
