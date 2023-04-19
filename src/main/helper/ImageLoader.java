@@ -1,30 +1,57 @@
 package helper;
 
 import javax.imageio.ImageIO;
-import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferByte;
 import java.io.File;
 import java.io.IOException;
 
-public class ImageLoader {
-    private Image img;
+public abstract class ImageLoader {
     //
-    public ImageLoader(String path, int width, int height) throws IOException {
-        //
+    public static BufferedImage getImage(String path) throws IOException {
         File file = new File(path);
-        Image img = ImageIO.read(file);
-        img = img.getScaledInstance(width, height, 0);
-        this.img = img;
-    }
-    //
-    public ImageLoader(String path, int size) throws IOException {
-        //
-        File file = new File(path);
-        Image img = ImageIO.read(file);
-        img = img.getScaledInstance(size, size, 0);
-        this.img = img;
-    }
-    //
-    public Image get_image() {
+        BufferedImage img = ImageIO.read(file);
         return img;
+    }
+    //
+    public static int[][] getImageAsPixelBuffer(BufferedImage img) {
+        final byte[] pixels = ((DataBufferByte) img.getRaster().getDataBuffer()).getData();
+        final int width = img.getWidth(); final int height = img.getHeight();
+        final boolean hasAlphaChannel = img.getAlphaRaster() != null;
+
+        int[][] result = new int[height][width];
+        if (hasAlphaChannel) {
+            final int pixelLength = 4;
+            for (int pixel = 0, row = 0, col = 0; pixel + 3 < pixels.length; pixel += pixelLength) {
+                int argb = 0;
+                argb += (((int) pixels[pixel] & 0xff) << 24); // alpha
+                argb += ((int) pixels[pixel + 1] & 0xff); // blue
+                argb += (((int) pixels[pixel + 2] & 0xff) << 8); // green
+                argb += (((int) pixels[pixel + 3] & 0xff) << 16); // red
+                result[row][col] = argb;
+                col++;
+                if (col == width) {
+                    col = 0;
+                    row++;
+                }
+            }
+        } else {
+            final int pixelLength = 3;
+            for (int pixel = 0, row = 0, col = 0; pixel + 2 < pixels.length; pixel += pixelLength) {
+                int argb = 0;
+                argb += -16777216; // 255 alpha
+                argb += ((int) pixels[pixel] & 0xff); // blue
+                argb += (((int) pixels[pixel + 1] & 0xff) << 8); // green
+                argb += (((int) pixels[pixel + 2] & 0xff) << 16); // red
+                result[row][col] = argb;
+                col++;
+                if (col == width) {
+                    col = 0;
+                    row++;
+                }
+        }
+      }
+
+      return result;
     }
 }

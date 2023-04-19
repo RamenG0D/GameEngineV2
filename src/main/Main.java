@@ -1,65 +1,55 @@
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
+import java.awt.image.BufferStrategy;
+import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferInt;
+import java.util.Random;
+
 import Test.Player;
 import helper.App;
 import helper.Button;
 
 public class Main extends App {
-    private MainMenu menu = new MainMenu(this);
-    private Player p;
+    private MainMenu menu = new MainMenu();
+    private Player p = new Player(100, 100);
+    
     //
-    public Main(String title, int width, int height, Player p/*, Camera cam*/) {
-        super(title, width, height/*, cam*/);
-        this.p = p;
+    public Main(String title, int width, int height, int desiredFps, Integer frameBuffer/*, Camera cam*/) {
+        super(title, width, height, desiredFps, frameBuffer/*, cam*/);
         //
+        addCustomKey("Q", KeyEvent.VK_Q); // Example of how to add a new key other than the defaults -> [w,a,s,d,esc,spc(space)]
         run();
     }
+
+    private BufferedImage img;
+    private int[][] pixels;
+
     @Override
-    public void render(Graphics g) { // FAS (Frames Ahead Of Schedue)
-        if(p != null) p.draw(g);
+    public void render() {
+        img = new BufferedImage(1024, 1024, BufferedImage.TYPE_4BYTE_ABGR);
+        //pixels = ImageLoader.getImageAsPixelBuffer(img);
+        Color color = new Color(0, 0, 0);
+        Random r = new Random();
+        //
+        for(int row = 0; row < img.getWidth(); row++) {
+            for(int col = 0; col < img.getHeight(); col++) {
+                color = new Color(r.nextInt(0, 255), r.nextInt(0, 255), r.nextInt(0, 255));
+                img.setRGB(row, col, color.getRGB());
+            }
+        }
+        //
+        g.drawImage(img, 0, 0, getWidth(), getHeight(), null);
     }
+
     @Override
     public void update(float delta) { // delta is the time between now and the last frame or the FPS
-        // things update here/things in world update here, this also handles application updates
-        if(gameState == GameState.Menu) menu.show(this.getPanel());
-        this.fps = delta;
-        input();
+        if(gameState == GameState.Menu) { menu.show(); }
+        else { menu.hide(); }
     }
     //
     public static void main(String[] args) {
-        //
-        Player p = new Player(100, 100);
-        //Camera cam = new Camera2D(p, 0 ,0, 800, 600);
-        //
-        new Main("Test Application", 800, 600, p/*, cam*/);
-        //
-    }
-    //
-    boolean w = false;
-    boolean a = false;
-    boolean s = false;
-    boolean d = false;
-    //
-    @Override
-    public void keyPressed(KeyEvent e) {
-        int keycode = e.getKeyCode();
-        //
-        if(keycode == KeyEvent.VK_W) {
-            w = true;
-        }
-        if(keycode == KeyEvent.VK_A) {
-            a = true;
-        }
-        if(keycode == KeyEvent.VK_S) {
-            s = true;
-        }
-        if(keycode == KeyEvent.VK_D) {
-            d = true;
-        }
-        if(keycode == KeyEvent.VK_ESCAPE) {
-            gameState = GameState.Menu;
-        }
-        //
+        new Main("Test Application", 800, 600, 60, null/*, cam*/);
     }
     //
     public GameState gameState = GameState.Menu;
@@ -69,60 +59,62 @@ public class Main extends App {
         Menu
     }
     //
-    public void input() { // ill add a more elagent solution later such as if( keypressed( {CONSTANT}.{KEY} ) )
-        if(w) {
+    @Override
+    public void input() { // an elagent solution such as if( keypressed( "{KEY}" ) ) {KEY} being the name / letter of the key
+        if(keypressed("w")) {
             p.x += p.dx*5;
             p.y += p.dy*5;
         }
-        if(a) {
+        if(keypressed("a")) {
             p.angle += 2;
-            if(p.angle > 359) p.angle -= 360;
+            FixAng(p.angle);
         }
-        if(s) {
+        if(keypressed("s")) {
             p.x -= p.dx*5;
             p.y -= p.dy*5;
         }
-        if(d) {
+        if(keypressed("d")) {
             p.angle -= 2;
-            if(p.angle < 0) p.angle += 360;
+            FixAng(p.angle);
         }
-    }
-    @Override
-    public void keyReleased(KeyEvent e) {
-        if(e.getKeyCode() == KeyEvent.VK_W) w = false;
-        if(e.getKeyCode() == KeyEvent.VK_S) s = false;
-        if(e.getKeyCode() == KeyEvent.VK_A) a = false;
-        if(e.getKeyCode() == KeyEvent.VK_D) d = false;
+        if(keypressed("esc")) {
+            gameState = GameState.Menu;
+        }
     }
     //
-    class MainMenu {
-        public Button[] btns = new Button[] {
-            new Button("exit",40, 100, 100, 80)
-        };
+    private void FixAng(double a) {
+        if(a < 0) a += 360;
+        if(a > 359) a -= 360;
+    }
+    //
+    @SuppressWarnings("unused")
+    private double DegToRad(double a) {
+        return a * Math.PI/180.0;
+    }
+    //
+    public class MainMenu {
+        private Button btn;
         //
-        public MainMenu(App app) {
-            for(Button btn : btns) {
-                btn.setLocation(btn.x, btn.y);
-                btn.setSize(btn.width, btn.height);
-                app.getPanel().add(btn);
-                btn.setVisible(false);
-            }
+        public MainMenu() {
+            btn = new Button("Play",40, 100, 100, 100);
             //
-            btns[0].addActionListener((e) -> {
-                CloseApp();
+            btn.addActionListener((e) -> {//CloseApp();
+                gameState = GameState.Game;
             });
+            //
+            add(btn);
+            btn.setVisible(false);
         }
         //
-        public void hide(Panel p) {
-            for (Button button : btns) {
-                button.setVisible(false);
-            }
+        public void show() {
+            btn.setVisible(true);
+            btn.setSize(btn.width, btn.height);
+            btn.setLocation(btn.x, btn.y);
+            //
         }
         //
-        public void show(Panel p) {
-            for (Button button : btns) {
-                button.setVisible(true);
-            }
+        public void hide() {
+            btn.setVisible(false);
         }
     }
     //
