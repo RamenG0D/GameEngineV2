@@ -1,7 +1,11 @@
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
+import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferInt;
+import java.util.Random;
+
 import Test.Player;
 import helper.App;
 import helper.Button;
@@ -9,35 +13,35 @@ import helper.Button;
 public class Main extends App {
     private MainMenu menu = new MainMenu();
     private Player p = new Player(100, 100);
-    private BufferedImage image = new BufferedImage(800, 580, BufferedImage.TYPE_INT_RGB);
+    
     //
-    public Main(String title, int width, int height/*, Camera cam*/) {
-        super(title, width, height/*, cam*/);
+    public Main(String title, int width, int height, int desiredFps, Integer frameBuffer/*, Camera cam*/) {
+        super(title, width, height, desiredFps, frameBuffer/*, cam*/);
         //
         addCustomKey("Q", KeyEvent.VK_Q); // Example of how to add a new key other than the defaults -> [w,a,s,d,esc,spc(space)]
         run();
     }
+
+    private BufferedImage img;
+    private int[][] pixels;
+
     @Override
     public void render() {
-        //if(p!=null&&gameState==GameState.Game) p.render(g);
-        /*try {
-            image = ImageLoader.getImage("assets/Ball.png");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }*/
-        /*if(image == null) return;
+        img = new BufferedImage(1024, 1024, BufferedImage.TYPE_4BYTE_ABGR);
+        //pixels = ImageLoader.getImageAsPixelBuffer(img);
+        Color color = new Color(0, 0, 0);
+        Random r = new Random();
         //
-        int[] pixels = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
-        int[] colorBuff = image.getRGB(0, 0, image.getWidth(), image.getHeight(), pixels, 0, image.getWidth());
-        //
-        for(int p : pixels) {
-            p = 255;
+        for(int row = 0; row < img.getWidth(); row++) {
+            for(int col = 0; col < img.getHeight(); col++) {
+                color = new Color(r.nextInt(0, 255), r.nextInt(0, 255), r.nextInt(0, 255));
+                img.setRGB(row, col, color.getRGB());
+            }
         }
         //
-        image.setRGB(0, 0, image.getWidth(), image.getHeight(), colorBuff, 0, image.getWidth());
-
-        g.drawImage(image, 0, 0, null);*/
+        g.drawImage(img, 0, 0, getWidth(), getHeight(), null);
     }
+
     @Override
     public void update(float delta) { // delta is the time between now and the last frame or the FPS
         if(gameState == GameState.Menu) { menu.show(); }
@@ -45,7 +49,7 @@ public class Main extends App {
     }
     //
     public static void main(String[] args) {
-        new Main("Test Application", 800, 600/*, cam*/);
+        new Main("Test Application", 800, 600, 60, null/*, cam*/);
     }
     //
     public GameState gameState = GameState.Menu;
@@ -98,7 +102,7 @@ public class Main extends App {
                 gameState = GameState.Game;
             });
             //
-            getPanel().add(btn);
+            add(btn);
             btn.setVisible(false);
         }
         //
@@ -107,18 +111,11 @@ public class Main extends App {
             btn.setSize(btn.width, btn.height);
             btn.setLocation(btn.x, btn.y);
             //
-            getPanel().setBackground(Color.lightGray);
         }
         //
         public void hide() {
             btn.setVisible(false);
-            getPanel().setBackground(Color.GRAY);
         }
     }
     //
-    @Override
-    public void render(Graphics g) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'render'");
-    }
 }

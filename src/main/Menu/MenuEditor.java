@@ -1,10 +1,6 @@
 package Menu;
 
-import java.awt.Color;
-import java.awt.Graphics;
 import java.awt.event.KeyEvent;
-import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferInt;
 import java.util.ArrayList;
 import java.util.List;
 import helper.App;
@@ -14,23 +10,19 @@ public class MenuEditor extends App {
     private List<Button> btns = new ArrayList<>();
     private Button tmp;
     //
-    public MenuEditor(String title, int width, int height) {
-        super(title, width, height);
-        this.setBackground(Color.black);
-        this.addMouseListener(this);
+    public MenuEditor(String title, int width, int height, int desiredFps, Integer frameBuffer) {
+        super(title, width, height, desiredFps, frameBuffer);
         //
-        b = new Button("Button", 0, 0);
-        b.width = 100;
-        b.height = 30;
+        b = new Button("Button", 10, 30, 100, 30);
         b.addActionListener((e) -> {
-            tmp.setText("TEMP");
             tmp.setVisible(true);
+            b.setVisible(false);
         });
-        tmp = new Button("", 0, 0, 100, 30);
+        tmp = new Button("TEMP", 0, 0, 100, 30);
         tmp.setVisible(false);
         //
-        this.panel.add(b);
-        this.panel.add(tmp);
+        this.add(tmp);
+        this.add(b);
         //
         addCustomKey("UP", KeyEvent.VK_UP);
         addCustomKey("DOWN", KeyEvent.VK_DOWN);
@@ -38,40 +30,30 @@ public class MenuEditor extends App {
         addCustomKey("RIGHT", KeyEvent.VK_RIGHT);
         //
         tmp.addActionListener((e) -> {
-            btns.add(tmp);
+            btns.add(new Button("Temp", tmp.x, tmp.y, 100, 30));
+            tmp = new Button("TEMP", 0, 0, 100, 30);
             tmp.x = 0;
             tmp.y = 0;
             tmp.setVisible(false);
+            b.setVisible(true);
         });
+        //
     }
-    Button b;
-    //
-    private BufferedImage img;
-    private int[] pixels;
+    private Button b;
+
     @Override
-    public void render(Graphics g) {
-        //
-        if(g == null) return;
-        //
-        img = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_RGB);
-        //
-        pixels = ((DataBufferInt)img.getRaster().getDataBuffer()).getData();
-        //
-        for(int i = 1400; i < pixels.length; i++) {
-            pixels[100] = -231213144;
-        }
-        //g.drawImage(img, 0, 0, null);
-    }
+    public void render() {}
     @Override
     public void update(float delta) {
         b.setSize(b.width, b.height);
-        b.setLocation(10, 120);
+        b.setLocation(b.x, b.y);
         tmp.setLocation(tmp.x, tmp.y);
         tmp.setSize(100, 100);
         //
         for(int i = 0; i < btns.size(); i++) {
             btns.get(i).setLocation(btns.get(i).x, btns.get(i).x);
             btns.get(i).setSize(btns.get(i).width, btns.get(i).height);
+            this.add(btns.get(i));
         }
     }
     @Override
@@ -89,15 +71,6 @@ public class MenuEditor extends App {
         if(keypressed("right")) {
             tmp.x += 1;
         }
-        if(keypressed("spc")) {
-            //
-        }
         //
-        tmp.repaint();
-    }
-    @Override
-    public void render() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'render'");
     }
 }
