@@ -1,4 +1,4 @@
-package Renders;
+package com.Renders;
 
 public class Screen {
     //public int xOffset = 0;

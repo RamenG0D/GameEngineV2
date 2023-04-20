@@ -1,4 +1,4 @@
-package helper;
+package com.utils;
 /**
  * The class responsible for controlling most, if not all velocity based movement
  * @author RamenGOD

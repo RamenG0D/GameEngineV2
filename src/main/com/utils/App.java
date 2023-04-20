@@ -1,6 +1,5 @@
-package helper;
+package com.utils;
 
-import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -13,9 +12,9 @@ import javax.swing.event.MouseInputListener;
 public abstract class App extends JFrame implements KeyListener, MouseInputListener, Runnable {
     private HashMap<String, Key> keys = new HashMap<>(); // used to find the new keys keycode
     public Mouse mouse = new Mouse();
-    protected int fps, highestFPS;
     private double desiredFps;
     private int buffer = 3;
+    protected int fps;
     /**
      * the currently initialized Application's State for general use and modification/checking
      */
@@ -92,8 +91,6 @@ public abstract class App extends JFrame implements KeyListener, MouseInputListe
             show();
             fps++;
             //
-            if(highestFPS < fps) highestFPS = fps;
-            //
             if(System.currentTimeMillis() - lastMs >= 1000) 
             {lastMs += 1000; fps = 0;}
             //
@@ -129,12 +126,6 @@ public abstract class App extends JFrame implements KeyListener, MouseInputListe
                 if(key.keycode == keycode) key.toggle(isPressed);
             }
         );
-    }
-    //
-    public void drawFps(Graphics g, int x, int y) {
-        g.setColor(Color.BLACK);
-        g.drawString("FPS: " + fps, x, y);
-        g.drawString("fps-cap: " + highestFPS, x+12, y);
     }
     /** used to debug whether or not keys are pressed */
     public void DebugKeys() {

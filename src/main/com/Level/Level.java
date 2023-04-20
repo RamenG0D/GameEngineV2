@@ -1,4 +1,4 @@
-package Level;
+package com.Level;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -6,9 +6,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.imageio.ImageIO;
-
-import Renders.Screen;
-import helper.Entity;
+import com.Renders.Screen;
+import com.utils.Entity;
 
 public class Level { // TODO rework this class and make many changes
     private byte[] tiles;
@@ -106,7 +105,7 @@ public class Level { // TODO rework this class and make many changes
     //
     public void renderEntities(Screen screen) {
         for(Entity e : getEntities()) {
-            e.render(screen);
+            //e.render(screen);
         }
     }
     //

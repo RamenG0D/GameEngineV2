@@ -1,4 +1,6 @@
-import Menu.MenuEditor;
+package com.Tests;
+
+import com.Menu.MenuEditor;
 
 public class Menus {
     public static void main(String[] args) {

@@ -1,6 +1,6 @@
-package helper;
+package com.utils;
 
-import Renders.Screen;
+import com.Renders.Screen;
 
 public abstract class Entity {
     //this class shouldnt contain too much data as individual entities need so specify it themselves

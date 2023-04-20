@@ -1,8 +1,8 @@
-package Renders;
+package com.Renders;
 //
 import java.awt.Graphics;
 
-import Test.Player;
+import com.Entities.Player;
 
 public class Camera2D implements Camera {
     private Player player;

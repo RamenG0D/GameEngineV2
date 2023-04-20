@@ -1,9 +1,10 @@
-package Test;
+package com.Entities;
 
 import java.awt.Color;
 import java.awt.Graphics;
 
 public class Player {
+    public Sprite sprite = new Sprite("assets/Ball.png");
     public double dx, dy, angle;
     public int x, y;
     //
