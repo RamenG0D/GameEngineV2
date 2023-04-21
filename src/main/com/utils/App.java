@@ -1,10 +1,13 @@
 package com.utils;
 
+import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
+import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import javax.swing.JFrame;
 import javax.swing.event.MouseInputListener;
@@ -78,14 +81,16 @@ public abstract class App extends JFrame implements KeyListener, MouseInputListe
             delta += elapsed / nsPerTick;
             //
             if(delta >= 1) {
-                input(); update((float)delta);
-                delta--;
+                update((float)delta);
+                delta -= 1;
             }
             //
             if(getBufferStrategy() == null) createBufferStrategy(buffer);
             g = getBufferStrategy().
             getDrawGraphics();
+            img = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
             render();
+            g.drawImage(img, 0, 0, getWidth(), getHeight(), null);
             g.dispose();
             getBufferStrategy().
             show();
@@ -97,7 +102,38 @@ public abstract class App extends JFrame implements KeyListener, MouseInputListe
         }
     }
     //
+    private BufferedImage img;
     protected Graphics g;
+    //
+    public BufferedImage getScreen() {
+        return img;
+    }
+    //
+    public void drawRect(int x, int y, int width, int height, int r, int g, int b) {
+        for(int row = 0; row < img.getWidth(); row++) {
+            for(int col = 0; col < img.getHeight(); col++) {
+                if(contains(row, col, new Rectangle(x, y, width, height))) img.setRGB(row, col, new Color(r, g, b).getRGB());
+                else continue;
+            }
+        }
+    }
+    //
+    public void drawRect(int x, int y, int width, int height, int color) {
+        for(int r = 0; r < img.getWidth(); r++) {
+            for(int c = 0; c < img.getHeight(); c++) {
+                if(contains(r, c, new Rectangle(x, y, width, height))) img.setRGB(r, c, color);
+                else continue;
+            }
+        }
+    }
+    //
+    private boolean contains(int x, int y, int width, int height, int x2, int y2) {
+        return new Rectangle(x, y, width, height).contains(x2, y2);
+    }
+    //
+    private boolean contains(int x, int y, Rectangle r) {
+        return r.contains(x, y);
+    }
     //
     private void setupKeys() {
         keys.put("ESC", new Key(KeyEvent.VK_ESCAPE, false));

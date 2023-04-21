@@ -2,15 +2,12 @@ package com.Tests;
 
 import java.awt.Color;
 import java.awt.event.KeyEvent;
-import java.awt.image.BufferedImage;
-import java.util.Random;
 import com.Entities.Player;
 import com.utils.App;
-import com.utils.Button;
 
 public class Main extends App {
-    private MainMenu menu = new MainMenu();
-    private Player p = new Player(0, 0);
+    //private MainMenu menu = new MainMenu();
+    private Player p = new Player(10, 10, 0);
     //
     public Main(String title, int width, int height, int desiredFps, Integer frameBuffer/*, Camera cam*/) {
         super(title, width, height, desiredFps, frameBuffer/*, cam*/);
@@ -18,37 +15,51 @@ public class Main extends App {
         addCustomKey("Q", KeyEvent.VK_Q); // Example of how to add a new key other than the defaults -> [w,a,s,d,esc,spc(space)]
     }
 
-    private BufferedImage img;
     private Color color = new Color(0, 0, 0);
-    private int[][] pixels;
 
     @Override
     public void render() {
-        img = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
+        //pixels = ((DataBufferInt) img.getRaster().getDataBuffer()).getData();
+        drawLine(0, 0, 20, 20);
         //
-        Random r = new Random();
+        g.setColor(Color.green);
+        g.drawLine(p.x+15, p.y+15, (int)(p.x + p.dx * 5), (int)(p.y + p.dy * 5));
         //
-        int[] sp = p.sprite.getPixels(); // sp (sprite pixels)
+    }
+
+    private void drawLine(int x1, int y1, int x2, int y2) {
         //
-        for(int row = 0; row < img.getWidth(); row++) {
-            for(int col = 0; col < img.getHeight(); col++) {
-                color = new Color(r.nextInt(0, 255), r.nextInt(0, 255), r.nextInt(0, 255));
-                img.setRGB(row, col, color.getRGB());
-            }
-        }
+        float dx, dy, m;
+        int px, py;
         //
-        g.drawImage(img, 0, 0, null);
+        dx = x2 - x1;
+        dy = y2 - y1;
+        //
+        m = dy / dx;
+        /*
+         * y = mx+b
+         */
+        //
+        px = (int)((m*0)+y1);
+        py = (int)((m*6)+y1);
+        System.out.println("slope: "+m+" dx: "+dx+" dy: "+dy+" px: "+px+" py: "+py);
+        /*
+         * y2 - y1
+         * ------- = m -> (slope)
+         * x2 - x1
+         */
         //
     }
 
     @Override
     public void update(float delta) { // delta is the time between now and the last frame or the FPS
-        if(gameState == GameState.Menu) { menu.show(); }
-        else { menu.hide(); }
+        /*if(gameState == GameState.Menu) { menu.show(); }
+        else { menu.hide(); }*/
+        input();
     }
-    //
+    
     public static void main(String[] args) {
-        new Main("Test Application", 800, 600, 60, 10/*, cam*/).run();
+        new Main("Test Application", 800, 600, 60, 3/*, cam*/).run();
     }
     //
     public GameState gameState = GameState.Game;
@@ -60,6 +71,7 @@ public class Main extends App {
     //
     @Override
     public void input() { // an elagent solution such as if( keypressed( "{KEY}" ) ) {KEY} being the name / letter of the key
+        //
         if(keypressed("w")) {
             p.x += p.dx*5;
             p.y += p.dy*5;
@@ -79,6 +91,9 @@ public class Main extends App {
         if(keypressed("esc")) {
             gameState = GameState.Menu;
         }
+        //
+        p.dx = Math.cos(p.angle*Math.PI/180.0) * 5;
+        p.dy = -Math.sin(p.angle*Math.PI/180.0) * 5;
     }
     //
     private void FixAng(double a) {
@@ -89,32 +104,6 @@ public class Main extends App {
     @SuppressWarnings("unused")
     private double DegToRad(double a) {
         return a * Math.PI/180.0;
-    }
-    //
-    public class MainMenu {
-        private Button btn;
-        //
-        public MainMenu() {
-            btn = new Button("Play",40, 100, 100, 100);
-            //
-            btn.addActionListener((e) -> {
-                gameState = GameState.Game;
-            });
-            //
-            add(btn);
-            btn.setVisible(false);
-        }
-        //
-        public void show() {
-            btn.setVisible(true);
-            btn.setSize(btn.width, btn.height);
-            btn.setLocation(btn.x, btn.y);
-            //
-        }
-        //
-        public void hide() {
-            btn.setVisible(false);
-        }
     }
     //
 }

@@ -24,7 +24,6 @@ public class Camera2D implements Camera {
     @Override
     public void render(Graphics g) {
         // render stuff
-        if(player != null) player.render(g);
         //
     }
     //
