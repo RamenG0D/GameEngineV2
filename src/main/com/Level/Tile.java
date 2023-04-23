@@ -1,6 +1,6 @@
-package Level;
+package com.Level;
 
-import Renders.Screen;
+import com.Renders.Screen;
 
 public abstract class Tile {
     public static final Tile[] tiles = new Tile[256];

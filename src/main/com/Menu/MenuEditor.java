@@ -1,10 +1,10 @@
-package Menu;
+package com.Menu;
 
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
-import helper.App;
-import helper.Button;
+import com.utils.App;
+import com.utils.Button;
 
 public class MenuEditor extends App {
     private List<Button> btns = new ArrayList<>();

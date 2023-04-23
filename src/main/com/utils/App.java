@@ -1,11 +1,13 @@
-package helper;
+package com.utils;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
+import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import javax.swing.JFrame;
 import javax.swing.event.MouseInputListener;
@@ -13,9 +15,9 @@ import javax.swing.event.MouseInputListener;
 public abstract class App extends JFrame implements KeyListener, MouseInputListener, Runnable {
     private HashMap<String, Key> keys = new HashMap<>(); // used to find the new keys keycode
     public Mouse mouse = new Mouse();
-    protected int fps, highestFPS;
     private double desiredFps;
     private int buffer = 3;
+    protected int fps;
     /**
      * the currently initialized Application's State for general use and modification/checking
      */
@@ -80,19 +82,19 @@ public abstract class App extends JFrame implements KeyListener, MouseInputListe
             //
             if(delta >= 1) {
                 input(); update((float)delta);
-                delta--;
+                delta -= 1;
             }
             //
             if(getBufferStrategy() == null) createBufferStrategy(buffer);
             g = getBufferStrategy().
             getDrawGraphics();
+            img = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
             render();
+            g.drawImage(img, 0, 0, getWidth(), getHeight(), null);
             g.dispose();
             getBufferStrategy().
             show();
             fps++;
-            //
-            if(highestFPS < fps) highestFPS = fps;
             //
             if(System.currentTimeMillis() - lastMs >= 1000) 
             {lastMs += 1000; fps = 0;}
@@ -100,7 +102,47 @@ public abstract class App extends JFrame implements KeyListener, MouseInputListe
         }
     }
     //
+    private BufferedImage img;
     protected Graphics g;
+    //
+    public BufferedImage getScreen() {
+        return img;
+    }
+    //
+    public void setPixel(int x, int y, int color) {
+        img.setRGB(x, y, color);
+    }
+    //
+    public void setPixel(int x, int y, int r, int g, int b) {
+        img.setRGB(x, y, new Color(r, g, b).getRGB());
+    }
+    //
+    public void drawRect(int x, int y, int width, int height, int r, int g, int b) {
+        for(int row = 0; row < img.getWidth(); row++) {
+            for(int col = 0; col < img.getHeight(); col++) {
+                if(contains(row, col, new Rectangle(x, y, width, height))) 
+                img.setRGB(row, col, new Color(r, g, b).getRGB());
+                else continue;
+            }
+        }
+    }
+    //
+    public void drawRect(int x, int y, int width, int height, int color) {
+        for(int r = 0; r < img.getWidth(); r++) {
+            for(int c = 0; c < img.getHeight(); c++) {
+                if(contains(r, c, new Rectangle(x, y, width, height))) img.setRGB(r, c, color);
+                else continue;
+            }
+        }
+    }
+    //
+    public boolean contains(int x, int y, int width, int height, int x2, int y2) {
+        return new Rectangle(x, y, width, height).contains(x2, y2);
+    }
+    //
+    public boolean contains(int x, int y, Rectangle r) {
+        return r.contains(x, y);
+    }
     //
     private void setupKeys() {
         keys.put("ESC", new Key(KeyEvent.VK_ESCAPE, false));
@@ -120,9 +162,10 @@ public abstract class App extends JFrame implements KeyListener, MouseInputListe
             new WindowEvent(this, WindowEvent.WINDOW_CLOSING)
         );
     }
+
     @Override
     public void keyTyped(KeyEvent e) {}
-    //
+
     public void toggle(int keycode, boolean isPressed) {
         keys.forEach(
             (keyName, key) -> {
@@ -130,12 +173,7 @@ public abstract class App extends JFrame implements KeyListener, MouseInputListe
             }
         );
     }
-    //
-    public void drawFps(Graphics g, int x, int y) {
-        g.setColor(Color.BLACK);
-        g.drawString("FPS: " + fps, x, y);
-        g.drawString("fps-cap: " + highestFPS, x+12, y);
-    }
+
     /** used to debug whether or not keys are pressed */
     public void DebugKeys() {
         keys.forEach(
@@ -148,10 +186,7 @@ public abstract class App extends JFrame implements KeyListener, MouseInputListe
     public void DebugMouse() {
         System.out.println("mouse X: "+ mouse.x +" mouse Y: "+mouse.y+" mouse click X: "+mouse.cX+" mouse click Y: "+mouse.cY);
     }
-    /** sets the cam to be used for this window (the engine only supports one cam TOTAL, at the moment...) */
-    /*public void setCamera(Camera camera) {
-        this.camera = camera;
-    }*/
+
     public class Mouse {
         private int x, y, cX, cY;
         //
@@ -168,22 +203,24 @@ public abstract class App extends JFrame implements KeyListener, MouseInputListe
             return cY;
         }
     }
+    
     @Override
     public void keyPressed(KeyEvent e) {
         toggle(e.getKeyCode(), true);
     }
+    
     @Override
     public void keyReleased(KeyEvent e) {
         toggle(e.getKeyCode(), false);
     }
-    //
+
     public boolean keypressed(String key) {
         if(keys.get(key.toUpperCase()) != null) return keys.get(key.toUpperCase()).isPressed();
         else try {throw new Exception("The key {"+key+"} Was not found in key map you can add new ones by calling the addCustomKey(String KeyName, int keycode) function!");}
         catch(Exception e) {e.printStackTrace();}
         return false;
     }
-    //
+
     public class Key {
         private int numTimesPressed;
         private boolean pressed;
@@ -208,7 +245,7 @@ public abstract class App extends JFrame implements KeyListener, MouseInputListe
             numTimesPressed++;
         }
     }
-    //
+
     public void addCustomKey(String KeyName, int keycode) {
         keys.putIfAbsent(KeyName, new Key(keycode, false));
     }
@@ -245,6 +282,6 @@ public abstract class App extends JFrame implements KeyListener, MouseInputListe
     public static enum ApplicationState {
         // app states
         Running,
-        Stopped
+        Idle
     }
 }
