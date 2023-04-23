@@ -81,7 +81,7 @@ public abstract class App extends JFrame implements KeyListener, MouseInputListe
             delta += elapsed / nsPerTick;
             //
             if(delta >= 1) {
-                update((float)delta);
+                input(); update((float)delta);
                 delta -= 1;
             }
             //
@@ -109,10 +109,19 @@ public abstract class App extends JFrame implements KeyListener, MouseInputListe
         return img;
     }
     //
+    public void setPixel(int x, int y, int color) {
+        img.setRGB(x, y, color);
+    }
+    //
+    public void setPixel(int x, int y, int r, int g, int b) {
+        img.setRGB(x, y, new Color(r, g, b).getRGB());
+    }
+    //
     public void drawRect(int x, int y, int width, int height, int r, int g, int b) {
         for(int row = 0; row < img.getWidth(); row++) {
             for(int col = 0; col < img.getHeight(); col++) {
-                if(contains(row, col, new Rectangle(x, y, width, height))) img.setRGB(row, col, new Color(r, g, b).getRGB());
+                if(contains(row, col, new Rectangle(x, y, width, height))) 
+                img.setRGB(row, col, new Color(r, g, b).getRGB());
                 else continue;
             }
         }
@@ -127,11 +136,11 @@ public abstract class App extends JFrame implements KeyListener, MouseInputListe
         }
     }
     //
-    private boolean contains(int x, int y, int width, int height, int x2, int y2) {
+    public boolean contains(int x, int y, int width, int height, int x2, int y2) {
         return new Rectangle(x, y, width, height).contains(x2, y2);
     }
     //
-    private boolean contains(int x, int y, Rectangle r) {
+    public boolean contains(int x, int y, Rectangle r) {
         return r.contains(x, y);
     }
     //
@@ -153,9 +162,10 @@ public abstract class App extends JFrame implements KeyListener, MouseInputListe
             new WindowEvent(this, WindowEvent.WINDOW_CLOSING)
         );
     }
+
     @Override
     public void keyTyped(KeyEvent e) {}
-    //
+
     public void toggle(int keycode, boolean isPressed) {
         keys.forEach(
             (keyName, key) -> {
@@ -163,6 +173,7 @@ public abstract class App extends JFrame implements KeyListener, MouseInputListe
             }
         );
     }
+
     /** used to debug whether or not keys are pressed */
     public void DebugKeys() {
         keys.forEach(
@@ -175,10 +186,7 @@ public abstract class App extends JFrame implements KeyListener, MouseInputListe
     public void DebugMouse() {
         System.out.println("mouse X: "+ mouse.x +" mouse Y: "+mouse.y+" mouse click X: "+mouse.cX+" mouse click Y: "+mouse.cY);
     }
-    /** sets the cam to be used for this window (the engine only supports one cam TOTAL, at the moment...) */
-    /*public void setCamera(Camera camera) {
-        this.camera = camera;
-    }*/
+
     public class Mouse {
         private int x, y, cX, cY;
         //
@@ -195,22 +203,24 @@ public abstract class App extends JFrame implements KeyListener, MouseInputListe
             return cY;
         }
     }
+    
     @Override
     public void keyPressed(KeyEvent e) {
         toggle(e.getKeyCode(), true);
     }
+    
     @Override
     public void keyReleased(KeyEvent e) {
         toggle(e.getKeyCode(), false);
     }
-    //
+
     public boolean keypressed(String key) {
         if(keys.get(key.toUpperCase()) != null) return keys.get(key.toUpperCase()).isPressed();
         else try {throw new Exception("The key {"+key+"} Was not found in key map you can add new ones by calling the addCustomKey(String KeyName, int keycode) function!");}
         catch(Exception e) {e.printStackTrace();}
         return false;
     }
-    //
+
     public class Key {
         private int numTimesPressed;
         private boolean pressed;
@@ -235,7 +245,7 @@ public abstract class App extends JFrame implements KeyListener, MouseInputListe
             numTimesPressed++;
         }
     }
-    //
+
     public void addCustomKey(String KeyName, int keycode) {
         keys.putIfAbsent(KeyName, new Key(keycode, false));
     }
@@ -272,6 +282,6 @@ public abstract class App extends JFrame implements KeyListener, MouseInputListe
     public static enum ApplicationState {
         // app states
         Running,
-        Stopped
+        Idle
     }
 }

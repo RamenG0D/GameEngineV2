@@ -2,6 +2,7 @@ package com.Tests;
 
 import java.awt.Color;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
 import com.Entities.Player;
 import com.utils.App;
 
@@ -15,47 +16,37 @@ public class Main extends App {
         addCustomKey("Q", KeyEvent.VK_Q); // Example of how to add a new key other than the defaults -> [w,a,s,d,esc,spc(space)]
     }
 
-    private Color color = new Color(0, 0, 0);
-
     @Override
     public void render() {
-        //pixels = ((DataBufferInt) img.getRaster().getDataBuffer()).getData();
-        drawLine(0, 0, 20, 20);
-        //
-        g.setColor(Color.green);
-        g.drawLine(p.x+15, p.y+15, (int)(p.x + p.dx * 5), (int)(p.y + p.dy * 5));
+        //drawLine(0, 0, 0, 20);
+        drawRect(0, 0, 60, 60, Color.BLUE.getRGB());
+        /*g.setColor(Color.green);
+        g.drawLine(p.x+15, p.y+15, (int)(p.x + p.dx * 5), (int)(p.y + p.dy * 5));*/
         //
     }
 
     private void drawLine(int x1, int y1, int x2, int y2) {
+        ArrayList<Integer> px = new ArrayList<>();ArrayList<Integer> py = new ArrayList<>();
+        double l = Math.sqrt(Math.pow((x2 - x1), 2) + Math.pow((y2 - y1), 2));
+        px.add(x1); px.add(x2); py.add(y1); py.add(y2);
+        for(int i = 1; i < l; i++) {
+            double d = i;
+            int newX = (int) (x2 + (((x1 - y2) / (l) * d)));
+            int newY = (int) (y2 + (((y1 - x2) / (l) * d)));
+            System.out.println("nx: "+newX+" ny: "+newY);
+            px.add(newX);
+            py.add(newY);
+        }
         //
-        float dx, dy, m;
-        int px, py;
-        //
-        dx = x2 - x1;
-        dy = y2 - y1;
-        //
-        m = dy / dx;
-        /*
-         * y = mx+b
-         */
-        //
-        px = (int)((m*0)+y1);
-        py = (int)((m*6)+y1);
-        System.out.println("slope: "+m+" dx: "+dx+" dy: "+dy+" px: "+px+" py: "+py);
-        /*
-         * y2 - y1
-         * ------- = m -> (slope)
-         * x2 - x1
-         */
-        //
+        for (int j = 0; j < l; j++) {
+            setPixel(px.get(j), py.get(j), Color.GREEN.getRGB());
+        }
     }
 
     @Override
     public void update(float delta) { // delta is the time between now and the last frame or the FPS
         /*if(gameState == GameState.Menu) { menu.show(); }
         else { menu.hide(); }*/
-        input();
     }
     
     public static void main(String[] args) {
