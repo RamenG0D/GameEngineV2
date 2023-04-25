@@ -117,4 +117,9 @@ public class TvStatic extends App {
             return r;
         }
     }
+
+    @Override
+    public void deprecatedGraphics(float delta) {
+        //
+    }
 }
