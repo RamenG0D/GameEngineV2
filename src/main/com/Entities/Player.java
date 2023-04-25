@@ -1,15 +1,10 @@
 package com.Entities;
 
-import java.awt.Color;
-import com.Renders.Screen;
-
 public class Player {
-    public Sprite sprite = new Sprite("assets/Ball.png");
-    private int color = Color.RED.getRed();
     public double dx, dy, angle;
     public int x, y;
     //
-    public Player(int x, int y, int scale) {
+    public Player(int x, int y) {
         //
         this.x = x;
         this.y = y;

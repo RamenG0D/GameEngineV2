@@ -72,6 +72,7 @@ public abstract class App extends JFrame implements KeyListener, MouseInputListe
         long lastMs = System.currentTimeMillis();
         long last = System.nanoTime();
         double delta = 0.0, elapsed = 0.0;
+        int fpsCounter = 0;
         //
         while(state == App.ApplicationState.Running) {
             long now = System.nanoTime();
@@ -81,7 +82,7 @@ public abstract class App extends JFrame implements KeyListener, MouseInputListe
             delta += elapsed / nsPerTick;
             //
             if(delta >= 1) {
-                input(); update((float)delta);
+                update((float)delta);
                 delta -= 1;
             }
             //
@@ -91,19 +92,24 @@ public abstract class App extends JFrame implements KeyListener, MouseInputListe
             img = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
             render();
             g.drawImage(img, 0, 0, getWidth(), getHeight(), null);
+            deprecatedGraphics((float)delta);
             g.dispose();
             getBufferStrategy().
             show();
-            fps++;
+            fpsCounter++;
+            //
+            input();
             //
             if(System.currentTimeMillis() - lastMs >= 1000) 
-            {lastMs += 1000; fps = 0;}
+            {lastMs += 1000; fps = fpsCounter; fpsCounter = 0;}
             //
         }
     }
     //
     private BufferedImage img;
     protected Graphics g;
+    //
+    public abstract void deprecatedGraphics(float delta);
     //
     public BufferedImage getScreen() {
         return img;
@@ -184,7 +190,7 @@ public abstract class App extends JFrame implements KeyListener, MouseInputListe
     }
     /** used to debug the mouse position */
     public void DebugMouse() {
-        System.out.println("mouse X: "+ mouse.x +" mouse Y: "+mouse.y+" mouse click X: "+mouse.cX+" mouse click Y: "+mouse.cY);
+        System.out.println("mouse X: "+mouse.x+" mouse Y: "+mouse.y+" mouse click X: "+mouse.cX+" mouse click Y: "+mouse.cY);
     }
 
     public class Mouse {
@@ -249,6 +255,7 @@ public abstract class App extends JFrame implements KeyListener, MouseInputListe
     public void addCustomKey(String KeyName, int keycode) {
         keys.putIfAbsent(KeyName, new Key(keycode, false));
     }
+    
     @Override
     public void mouseClicked(MouseEvent e) {
         //
@@ -256,16 +263,22 @@ public abstract class App extends JFrame implements KeyListener, MouseInputListe
         mouse.cY = e.getY();
         //
     }
+    
     @Override
     public void mouseDragged(MouseEvent e) {}
+    
     @Override
     public void mouseEntered(MouseEvent e) {}
+    
     @Override
     public void mouseExited(MouseEvent e) {}
+    
     @Override
     public void mousePressed(MouseEvent e) {}
+    
     @Override
     public void mouseReleased(MouseEvent e) {}
+    
     @Override
     public void mouseMoved(MouseEvent e) {
         //

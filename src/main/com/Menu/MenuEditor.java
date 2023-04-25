@@ -73,4 +73,8 @@ public class MenuEditor extends App {
         }
         //
     }
+    @Override
+    public void deprecatedGraphics(float delta) {
+        throw new UnsupportedOperationException("Unimplemented method 'graphicsTest'");
+    }
 }
