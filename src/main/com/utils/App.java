@@ -1,20 +1,19 @@
 package com.utils;
 
-import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
-import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import javax.swing.JFrame;
 import javax.swing.event.MouseInputListener;
+import com.Renders.VeiwPort3D;
 
 public abstract class App extends JFrame implements KeyListener, MouseInputListener, Runnable {
     private HashMap<String, Key> keys = new HashMap<>(); // used to find the new keys keycode
-    public Mouse mouse = new Mouse();
+    protected Mouse mouse = new Mouse();
+    protected VeiwPort3D screen;
     private double desiredFps;
     private int buffer = 3;
     protected int fps;
@@ -52,6 +51,8 @@ public abstract class App extends JFrame implements KeyListener, MouseInputListe
         this.setTitle(title);
         this.setFocusable(true);
         this.setLayout(null);
+        //
+        screen = new VeiwPort3D(width, height, null);
     }
     //
     private void init() {
@@ -64,6 +65,8 @@ public abstract class App extends JFrame implements KeyListener, MouseInputListe
         this.addKeyListener(this);
         this.setFocusable(true);
         this.setLayout(null);
+        //
+        screen = new VeiwPort3D(400, 400, null);
     }
     //
     @Override
@@ -87,12 +90,10 @@ public abstract class App extends JFrame implements KeyListener, MouseInputListe
             }
             //
             if(getBufferStrategy() == null) createBufferStrategy(buffer);
-            g = getBufferStrategy().
-            getDrawGraphics();
-            img = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
+            Graphics g = getBufferStrategy().getDrawGraphics();
             render();
-            g.drawImage(img, 0, 0, getWidth(), getHeight(), null);
-            deprecatedGraphics((float)delta);
+            g.drawImage(screen.getImage(), 0, 0, getWidth(), getHeight(), null);
+            deprecatedGraphics(g);
             g.dispose();
             getBufferStrategy().
             show();
@@ -105,51 +106,9 @@ public abstract class App extends JFrame implements KeyListener, MouseInputListe
             //
         }
     }
-    //
-    private BufferedImage img;
-    protected Graphics g;
-    //
-    public abstract void deprecatedGraphics(float delta);
-    //
-    public BufferedImage getScreen() {
-        return img;
-    }
-    //
-    public void setPixel(int x, int y, int color) {
-        img.setRGB(x, y, color);
-    }
-    //
-    public void setPixel(int x, int y, int r, int g, int b) {
-        img.setRGB(x, y, new Color(r, g, b).getRGB());
-    }
-    //
-    public void drawRect(int x, int y, int width, int height, int r, int g, int b) {
-        for(int row = 0; row < img.getWidth(); row++) {
-            for(int col = 0; col < img.getHeight(); col++) {
-                if(contains(row, col, new Rectangle(x, y, width, height))) 
-                img.setRGB(row, col, new Color(r, g, b).getRGB());
-                else continue;
-            }
-        }
-    }
-    //
-    public void drawRect(int x, int y, int width, int height, int color) {
-        for(int r = 0; r < img.getWidth(); r++) {
-            for(int c = 0; c < img.getHeight(); c++) {
-                if(contains(r, c, new Rectangle(x, y, width, height))) img.setRGB(r, c, color);
-                else continue;
-            }
-        }
-    }
-    //
-    public boolean contains(int x, int y, int width, int height, int x2, int y2) {
-        return new Rectangle(x, y, width, height).contains(x2, y2);
-    }
-    //
-    public boolean contains(int x, int y, Rectangle r) {
-        return r.contains(x, y);
-    }
-    //
+
+    public abstract void deprecatedGraphics(Graphics g);
+
     private void setupKeys() {
         keys.put("ESC", new Key(KeyEvent.VK_ESCAPE, false));
         keys.put("SPC", new Key(KeyEvent.VK_SPACE, false));
@@ -162,7 +121,7 @@ public abstract class App extends JFrame implements KeyListener, MouseInputListe
     public abstract void update(float delta); // delta is the time between now andd the last frame
     public abstract void render(); // used for all things rendering
     public abstract void input(); // called continuosly but this function will control the flow of (keyboard / mouse) input events
-    //
+
     public void CloseApp() {
         this.dispatchEvent(
             new WindowEvent(this, WindowEvent.WINDOW_CLOSING)
@@ -172,7 +131,7 @@ public abstract class App extends JFrame implements KeyListener, MouseInputListe
     @Override
     public void keyTyped(KeyEvent e) {}
 
-    public void toggle(int keycode, boolean isPressed) {
+    public final void toggle(int keycode, boolean isPressed) {
         keys.forEach(
             (keyName, key) -> {
                 if(key.keycode == keycode) key.toggle(isPressed);
@@ -181,15 +140,16 @@ public abstract class App extends JFrame implements KeyListener, MouseInputListe
     }
 
     /** used to debug whether or not keys are pressed */
-    public void DebugKeys() {
+    public final void DebugKeys() {
         keys.forEach(
             (string, key) -> {
                 if(key.pressed) System.out.println("Key: " + string);
             }
         );
     }
+
     /** used to debug the mouse position */
-    public void DebugMouse() {
+    public final void DebugMouse() {
         System.out.println("mouse X: "+mouse.x+" mouse Y: "+mouse.y+" mouse click X: "+mouse.cX+" mouse click Y: "+mouse.cY);
     }
 
@@ -281,11 +241,10 @@ public abstract class App extends JFrame implements KeyListener, MouseInputListe
     
     @Override
     public void mouseMoved(MouseEvent e) {
-        //
         mouse.x = e.getX();
         mouse.y = e.getY();
-        //
     }
+
     /**
      *  <h3>a general purpose state Manager to facilitate changes in the app such
      *  app closing, app minimized</h3> yep its pretty simple, its ment to serve as more of a wrapper

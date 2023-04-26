@@ -1,6 +1,7 @@
 package com.demos;
 
 import java.awt.Color;
+import java.awt.Graphics;
 import java.util.concurrent.atomic.AtomicLong;
 import com.utils.App;
 
@@ -19,9 +20,9 @@ public class TvStatic extends App {
     public void render() {
         Random rand = new Random();
         //
-        for (int r = 0; r < getScreen().getWidth(); r++) {
-            for (int c = 0; c < getScreen().getHeight(); c++) {
-                getScreen().setRGB(r, c, new Color(rand.nextInt(0, 255), rand.nextInt(0, 255), rand.nextInt(0, 255)).getRGB());
+        for (int r = 0; r < screen.getWidth(); r++) {
+            for (int c = 0; c < screen.getHeight(); c++) {
+                screen.setPixel(r, c, new Color(rand.nextInt(0, 255), rand.nextInt(0, 255), rand.nextInt(0, 255)).getRGB());
             }
         }
     }
@@ -102,24 +103,18 @@ public class TvStatic extends App {
         }
         //
         public int nextInt(int bound) {
-            if (bound <= 0)
-                throw new IllegalArgumentException(BAD_BOUND);
+            if (bound <= 0) throw new IllegalArgumentException(BAD_BOUND);
             int r = next(31);
             int m = bound - 1;
             if ((bound & m) == 0)  // i.e., bound is a power of 2
                 r = (int)((bound * (long)r) >> 31);
             else { // reject over-represented candidates
-                for (int u = r;
-                     u - (r = u % bound) + m < 0;
-                     u = next(31))
-                    ;
+                for(int u = r; u - (r = u % bound) + m < 0; u = next(31));
             }
             return r;
         }
     }
 
     @Override
-    public void deprecatedGraphics(float delta) {
-        //
-    }
+    public void deprecatedGraphics(Graphics g) {}
 }

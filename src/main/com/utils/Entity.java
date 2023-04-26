@@ -1,22 +1,28 @@
 package com.utils;
 
-import com.Renders.Screen;
+import com.Entities.Sprite;
+import com.Tile.Tile;
 
-public abstract class Entity {
-    //this class shouldnt contain too much data as individual entities need so specify it themselves
-    public int x, y;
-    //
-    public Entity(int x, int y) {
-        this.x = x;
-        this.y = y;
-    }
-    //
-    public void render(Screen screen) {
-        //
-    }
-    /*
-     * g.setColor(Color.RED);
-     * g.drawRect(x, y, 10, 10);
-     * g.drawImage(img, x, y, null);
-     */
+public interface Entity {
+    
+    public Sprite getSprite();
+
+    public float getX();
+
+    public float getY();
+
+    public int getWidth();
+
+    public int getHeight();
+
+    public World getWorld();
+
+    public Tile getTile();
+
+    public void setTile(Tile tile);
+
+    public float getViewDirectionX();
+
+	public float getViewDirectionY();
+
 }

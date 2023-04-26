@@ -1,5 +1,11 @@
 package com.utils;
 
-public class World { // TODO add much logic
-    public World() {}
+import java.util.List;
+
+public interface World {
+
+    public TileMap getTileMap();
+    
+    public List<Entity> getEntities();
+
 }

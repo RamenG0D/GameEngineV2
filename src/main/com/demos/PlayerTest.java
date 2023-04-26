@@ -1,16 +1,17 @@
-package com.Tests;
+package com.demos;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import com.Entities.Player;
 import com.utils.App;
 
-public class Main extends App {
+public class PlayerTest extends App {
     //private MainMenu menu = new MainMenu();
     private Player p = new Player(15, 40);
     //
-    public Main(String title, int width, int height, int desiredFps, Integer frameBuffer/*, Camera cam*/) {
+    public PlayerTest(String title, int width, int height, int desiredFps, Integer frameBuffer/*, Camera cam*/) {
         super(title, width, height, desiredFps, frameBuffer/*, cam*/);
         //
         addCustomKey("Q", KeyEvent.VK_Q); // Example of how to add a new key other than the defaults -> [w,a,s,d,esc,spc(space)]
@@ -21,22 +22,9 @@ public class Main extends App {
         //
         p.dx = Math.cos(p.angle*Math.PI/180.0) * 5;
         p.dy = -Math.sin(p.angle*Math.PI/180.0) * 5;
-        drawRect(0, 0, getWidth(), getHeight(), Color.BLACK.getRGB());
-        drawRect(p.x, p.y, 32, 32, Color.RED.getRGB());
-        drawLine(p.x+15, p.y+15, (int)((p.x+15) + p.dx * 10), (int)((p.y+15) + p.dy * 10));
-        //
-    }
-
-    private void drawLine(int x1, int y1, int x2, int y2) {
-        int dx = x2 - x1, dy = y2 - y1;
-        double l = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
-        for(int t = 1; t < l+1; t++) {
-            int newX = (int)(x1 + (((dx / l) * t)));
-            int newY = (int)(y1 + (((dy / l) * t)));
-            if(newX > getWidth() - 1 || newY > getHeight() - 1) continue;
-            if(newX < 0 || newY < 0) continue;
-            getScreen().setRGB(newX, newY, Color.GREEN.getRGB());
-        }
+        screen.drawRect(0, 0, getWidth(), getHeight(), Color.BLACK.getRGB());
+        screen.drawRect(p.x, p.y, 32, 32, Color.RED.getRGB());
+        screen.drawLine(p.x+15, p.y+15, (int)((p.x+15) + p.dx * 10), (int)((p.y+15) + p.dy * 10), Color.GREEN.getRGB());
         //
     }
 
@@ -45,7 +33,7 @@ public class Main extends App {
     }
     
     public static void main(String[] args) {
-        new Main("Test Application", 800, 600, 60, 3)
+        new PlayerTest("Test Application", 800, 600, 60, 3)
         .run();
     }
 
@@ -93,11 +81,9 @@ public class Main extends App {
     }
 
     @Override
-    public void deprecatedGraphics(float delta) {
-        //
+    public void deprecatedGraphics(Graphics g) {
         g.setColor(Color.WHITE);
         g.setFont(new Font("Calibre", Font.PLAIN, 12));
         g.drawString("fps: " + fps, 20, 50);
-        //
     }
 }
