@@ -1,9 +1,9 @@
-package com.utils;
+package com.Resources;
 
 import java.io.IOException;
-import java.util.List;
 
-public interface GameFile {
+public interface SaveData {
+
     public String readString() throws IOException;
 
 	public boolean writeString(String s) throws IOException;
@@ -24,11 +24,4 @@ public interface GameFile {
 
 	public boolean writeBoolean(boolean b) throws IOException;
 
-	public List<?> readList() throws IOException;
-
-	public boolean writeList(List<?> l) throws IOException;
-
-	public Saveable<?> readSaveable() throws IOException;
-
-	public boolean saveSaveable(Saveable<?> o) throws IOException;
 }

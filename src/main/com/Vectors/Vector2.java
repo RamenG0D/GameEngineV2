@@ -1,4 +1,4 @@
-package com.utils;
+package com.Vectors;
 /**
  * The class responsible for controlling most, if not all velocity based movement
  * @author RamenGOD

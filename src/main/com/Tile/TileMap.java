@@ -1,6 +1,4 @@
-package com.utils;
-
-import com.Tile.Tile;
+package com.Tile;
 
 public interface TileMap {
 

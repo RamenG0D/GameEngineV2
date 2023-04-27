@@ -1,4 +1,4 @@
-package com.utils;
+package com.Menu;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;

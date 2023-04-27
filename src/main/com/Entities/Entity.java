@@ -1,11 +1,11 @@
-package com.utils;
+package com.Entities;
 
-import com.Entities.Sprite;
 import com.Tile.Tile;
+import com.utils.World;
 
 public interface Entity {
     
-    public Sprite getSprite();
+    //public Sprite getSprite();
 
     public float getX();
 

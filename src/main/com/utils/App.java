@@ -8,19 +8,24 @@ import java.awt.event.WindowEvent;
 import java.util.HashMap;
 import javax.swing.JFrame;
 import javax.swing.event.MouseInputListener;
+import com.Renders.Screen;
 import com.Renders.VeiwPort3D;
+import com.Resources.ResourceManager;
 
 public abstract class App extends JFrame implements KeyListener, MouseInputListener, Runnable {
     private HashMap<String, Key> keys = new HashMap<>(); // used to find the new keys keycode
+    protected ResourceManager resourceManager;
     protected Mouse mouse = new Mouse();
-    protected VeiwPort3D screen;
+    protected Screen screen;
     private double desiredFps;
     private int buffer = 3;
     protected int fps;
+
     /**
      * the currently initialized Application's State for general use and modification/checking
      */
     public ApplicationState state = ApplicationState.Running;
+
     /**
      * <h3>A class to define window and application behavior</h3>
      * creates a default window and graphics context
@@ -29,6 +34,7 @@ public abstract class App extends JFrame implements KeyListener, MouseInputListe
         init(); setupKeys();
         this.setVisible(true);
     }
+
     /**
      * <h3>A class to define window and application behavior</h3>
      * creates a default window and graphics context
@@ -37,11 +43,11 @@ public abstract class App extends JFrame implements KeyListener, MouseInputListe
         init(title, width, height, frameBuffer, desiredfps); setupKeys();
         this.setVisible(true);
     }
-    //
+
     private void init(String title, int width, int height, Integer buffer, int desiredFps) {
         if(buffer != null) this.buffer = buffer;
         this.desiredFps = desiredFps;
-        //
+
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.setSize(width, height);
         this.setLocationRelativeTo(null);
@@ -51,13 +57,14 @@ public abstract class App extends JFrame implements KeyListener, MouseInputListe
         this.setTitle(title);
         this.setFocusable(true);
         this.setLayout(null);
-        //
+
         screen = new VeiwPort3D(width, height, null);
+        resourceManager = ResourceManager.getNewInstance();
     }
-    //
+
     private void init() {
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
-        this.setSize(400, 400);
+        this.setSize(600, 600);
         this.setLocationRelativeTo(null);
         this.setTitle("Application"); // default Title
         this.addMouseMotionListener(this);
@@ -65,10 +72,11 @@ public abstract class App extends JFrame implements KeyListener, MouseInputListe
         this.addKeyListener(this);
         this.setFocusable(true);
         this.setLayout(null);
-        //
-        screen = new VeiwPort3D(400, 400, null);
+
+        screen = new VeiwPort3D(600, 600, null);
+        resourceManager = ResourceManager.getNewInstance();
     }
-    //
+
     @Override
     public void run() {
         final double nsPerTick = 1000000000D / desiredFps;
@@ -76,34 +84,33 @@ public abstract class App extends JFrame implements KeyListener, MouseInputListe
         long last = System.nanoTime();
         double delta = 0.0, elapsed = 0.0;
         int fpsCounter = 0;
-        //
+
         while(state == App.ApplicationState.Running) {
             long now = System.nanoTime();
             elapsed = now - last;
             last = now;
-            //
+
             delta += elapsed / nsPerTick;
-            //
+
             if(delta >= 1) {
                 update((float)delta);
                 delta -= 1;
             }
-            //
+
             if(getBufferStrategy() == null) createBufferStrategy(buffer);
             Graphics g = getBufferStrategy().getDrawGraphics();
             render();
             g.drawImage(screen.getImage(), 0, 0, getWidth(), getHeight(), null);
             deprecatedGraphics(g);
             g.dispose();
-            getBufferStrategy().
-            show();
+            getBufferStrategy().show();
             fpsCounter++;
-            //
+
             input();
-            //
+
             if(System.currentTimeMillis() - lastMs >= 1000) 
             {lastMs += 1000; fps = fpsCounter; fpsCounter = 0;}
-            //
+
         }
     }
 
@@ -117,7 +124,7 @@ public abstract class App extends JFrame implements KeyListener, MouseInputListe
         keys.put("S", new Key(KeyEvent.VK_S, false));
         keys.put("D", new Key(KeyEvent.VK_D, false));
     }
-    //
+
     public abstract void update(float delta); // delta is the time between now andd the last frame
     public abstract void render(); // used for all things rendering
     public abstract void input(); // called continuosly but this function will control the flow of (keyboard / mouse) input events
@@ -155,16 +162,19 @@ public abstract class App extends JFrame implements KeyListener, MouseInputListe
 
     public class Mouse {
         private int x, y, cX, cY;
-        //
+
         public int getX() {
             return x;
         }
+
         public int getY() {
             return y;
         }
+
         public int getCX() {
             return cX;
         }
+
         public int getCY() {
             return cY;
         }
@@ -186,25 +196,29 @@ public abstract class App extends JFrame implements KeyListener, MouseInputListe
         catch(Exception e) {e.printStackTrace();}
         return false;
     }
-
+ 
     public class Key {
         private int numTimesPressed;
         private boolean pressed;
         private int keycode;
-        //
+
         Key(int keycode, boolean pressed) {
             this.keycode = keycode;
             this.pressed = pressed;
         }
-        //
+
         public int getKeyCode() {
             return keycode;
         }
-        //
+
         public boolean isPressed() {
             return pressed;
         }
-        //
+
+        public int getNumTimesPressed() {
+            return numTimesPressed;
+        }
+
         public void toggle(boolean isPressed) {
             pressed = isPressed;
             if(pressed)
@@ -218,10 +232,8 @@ public abstract class App extends JFrame implements KeyListener, MouseInputListe
     
     @Override
     public void mouseClicked(MouseEvent e) {
-        //
         mouse.cX = e.getX();
         mouse.cY = e.getY();
-        //
     }
     
     @Override
