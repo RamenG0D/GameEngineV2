@@ -5,11 +5,11 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>com.app</groupId>
-  <artifactId>application</artifactId>
+  <groupId>com.app.jge</groupId>
+  <artifactId>JavaGameEngine</artifactId>
   <version>0.0.1</version>
 
-  <name>application</name>
+  <name>JGE</name>
   <url>https://github.com/drplague1/GameEngineV2</url>
 
   <properties>
@@ -18,8 +18,17 @@
     <maven.compiler.target>1.8</maven.compiler.target>
   </properties>
 
+  <dependencies>
+    <dependency>
+      <artifactId>raycaster</artifactId>
+      <version>0.0.1</version>
+      <groupId>com.squareys.raycaster</groupId>
+      <systemPath>C:\Users\justi\Downloads\GameEngineV2\lib\raycaster.jar</systemPath>
+      <scope>system</scope>
+    </dependency>
+  </dependencies>
+
   <build>
-    <sourceDirectory>src/main</sourceDirectory>
     <pluginManagement>
       <plugins>
         <plugin>
