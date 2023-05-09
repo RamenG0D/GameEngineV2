@@ -8,7 +8,7 @@ import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 
-public abstract class Screen extends Canvas {
+public class Screen extends Canvas {
     private int Width, Height;
     private BufferedImage image;
     private int[] pixels;

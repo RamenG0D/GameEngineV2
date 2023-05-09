@@ -1,7 +1,6 @@
 package com.demos;
 
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import com.Entities.Player;
@@ -19,13 +18,11 @@ public class PlayerTest extends App {
 
     @Override
     public void render() {
-        //
         p.dx = Math.cos(p.angle*Math.PI/180.0) * 5;
         p.dy = -Math.sin(p.angle*Math.PI/180.0) * 5;
-        //screen.drawRect(0, 0, getWidth(), getHeight(), Color.BLACK.getRGB());
+
         getScreen().drawRect(p.x, p.y, 32, 32, Color.RED.getRGB());
         getScreen().drawLine(p.x+15, p.y+15, (int)((p.x+15) + p.dx * 10), (int)((p.y+15) + p.dy * 10), Color.GREEN.getRGB());
-        //
     }
 
     @Override
@@ -33,7 +30,7 @@ public class PlayerTest extends App {
     }
     
     public static void main(String[] args) {
-        new PlayerTest("Test Application", 800, 600, 60, 3, Color.BLUE)
+        new PlayerTest("Test Application", 800, 600, 60, 3, Color.BLACK)
         .run();
     }
 
@@ -46,7 +43,7 @@ public class PlayerTest extends App {
 
     @Override
     public void input() { // an elagent solution such as if( keypressed( "{KEY}" ) ) {KEY} being the name / letter of the key
-        //
+
         if(keypressed("w")) {
             p.x += p.dx*5;
             p.y += p.dy*5;
@@ -67,14 +64,14 @@ public class PlayerTest extends App {
             p.x = 15;
             p.y = 40;
         }
-        //
+
     }
-    //
+
     private void FixAng(double a) {
         if(a < 0) a += 360;
         if(a > 359) a -= 360;
     }
-    //
+
     @SuppressWarnings("unused")
     private double DegToRad(double a) {
         return a * Math.PI/180.0;
@@ -82,8 +79,7 @@ public class PlayerTest extends App {
 
     @Override
     public void deprecatedGraphics(Graphics g) {
-        g.setColor(Color.WHITE);
-        g.setFont(new Font("Calibre", Font.PLAIN, 12));
-        g.drawString("fps: " + fps, 20, 50);
+        g.setColor(Color.gray);
+        g.drawRect(30, 30, 100, 100);
     }
 }

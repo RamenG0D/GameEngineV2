@@ -11,7 +11,6 @@ import java.util.HashMap;
 import javax.swing.JFrame;
 import javax.swing.event.MouseInputListener;
 import com.Renders.Screen;
-import com.Renders.VeiwPort3D;
 import com.deprecated.DepResourceManager;
 
 public abstract class App extends JFrame implements KeyListener, MouseInputListener, Runnable {
@@ -63,7 +62,7 @@ public abstract class App extends JFrame implements KeyListener, MouseInputListe
         this.setColor(backgroundColor);
 
         if(screen != null) this.screen = screen; 
-        else this.screen = new VeiwPort3D(width, height);
+        else this.screen = new Screen(width, height);
         resourceManager = DepResourceManager.getInstance();
     }
 
@@ -84,6 +83,7 @@ public abstract class App extends JFrame implements KeyListener, MouseInputListe
         this.setLayout(null);
         this.setColor(Color.BLACK);
 
+        this.screen = new Screen(400, 400);
         resourceManager = DepResourceManager.getInstance();
         desiredFps = 60;
     }
@@ -114,12 +114,9 @@ public abstract class App extends JFrame implements KeyListener, MouseInputListe
 
             if(getBufferStrategy() == null) createBufferStrategy(buffer);
             Graphics g = getBufferStrategy().getDrawGraphics();
-
-            if(screen != null) {
-                screen.drawRect(0, 0, getWidth(), getHeight(), BackgroundColor.getRGB()); // clear Screen with background color
-                render();
-                g.drawImage(screen.getImage(), 0, 0, getWidth(), getHeight(), null);
-            }
+            screen.drawRect(0, 0, getWidth(), getHeight(), BackgroundColor.getRGB()); // clear Screen with background color
+            render();
+            g.drawImage(screen.getImage(), 0, 0, getWidth(), getHeight(), null);
             drawFps(g);
             deprecatedGraphics(g);
             g.dispose();
@@ -131,11 +128,8 @@ public abstract class App extends JFrame implements KeyListener, MouseInputListe
             if(System.currentTimeMillis() - lastMs >= 1000) 
             {lastMs += 1000; fps = fpsCounter; fpsCounter = 0;}
 
-            try {
-                Thread.sleep((long)(fps/desiredFps));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            try{Thread.sleep((long)((fps / desiredFps) * 10));}
+            catch(Exception e){e.printStackTrace();}
 
         }
     }

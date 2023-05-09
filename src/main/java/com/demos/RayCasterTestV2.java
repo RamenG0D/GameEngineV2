@@ -56,7 +56,7 @@ public class RayCasterTestV2 extends App {
 	private Game game;
 
 	public static void main(String[] args){
-		new RayCasterTestV2("RayCasterV2", 800, 600, 2, Color.BLACK, null).run();
+		new RayCasterTestV2("RayCasterV2", 800, 600, 80, Color.BLACK, null).run();
 	}
 
 	@Override
