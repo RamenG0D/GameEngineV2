@@ -9,7 +9,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.Charset;
 
-import com.utils.Tuple;
+import com.primitives.Tuple;
 
 public class DepResourceManager implements DepIResourceManager {
     private static DepResourceManager manager;

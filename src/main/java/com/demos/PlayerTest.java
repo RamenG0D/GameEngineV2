@@ -3,8 +3,9 @@ package com.demos;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
+
+import com.Application.App;
 import com.Entities.Player;
-import com.utils.App;
 
 public class PlayerTest extends App {
     //private MainMenu menu = new MainMenu();

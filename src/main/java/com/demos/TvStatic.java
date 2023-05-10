@@ -3,7 +3,8 @@ package com.demos;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.util.concurrent.atomic.AtomicLong;
-import com.utils.App;
+
+import com.Application.App;
 
 public class TvStatic extends App {
 

@@ -2,7 +2,8 @@ package com.demos;
 
 import java.awt.Color;
 import java.awt.Graphics;
-import com.utils.App;
+
+import com.Application.App;
 
 public class RayCasterTestV1 extends App {
 
@@ -93,6 +94,10 @@ public class RayCasterTestV1 extends App {
         if (a > 359) a -= 360;
         if (a < 0) a += 360;
         return a;
+    }
+
+    private double distance(double x1, double y1, double x2, double y2) {
+        return (x1 + y1) - (x2 + y2);
     }
 
     private float px, py, pdx, pdy, pa;

@@ -5,12 +5,12 @@ import java.awt.Graphics;
 import java.io.File;
 import java.net.MalformedURLException;
 
+import com.Application.App;
 import com.Renders.Screen;
-import com.utils.App;
-import raycaster.Bitmap.IBitmap;
-import raycaster.Tile.TileMap;
-import raycaster.utils.Game;
-import raycaster.utils.ResourceManager;
+import com.raycaster.Bitmap.IBitmap;
+import com.raycaster.Tile.TileMap;
+import com.raycaster.utils.Game;
+import com.raycaster.utils.ResourceManager;
 
 public class RayCasterTestV2 extends App {
 	
@@ -20,12 +20,10 @@ public class RayCasterTestV2 extends App {
 		IBitmap<Integer> bmp = null;
 		try {
 			bmp = ResourceManager.getInstance().loadBitmap(new File("AppData/assets/CheepTexture.png").toURI().toURL());
-		} catch (MalformedURLException e) {
+		} catch(MalformedURLException e) {
 			e.printStackTrace();
 		}
-		if(bmp != null)
-		ResourceManager.getInstance().createTexture(bmp);
-		else System.out.println("bmp NOT LAODED");
+		if(bmp != null) ResourceManager.getInstance().createTexture(bmp);
 
 		IBitmap<Integer> bmp1 = null;
 		try {
@@ -33,9 +31,7 @@ public class RayCasterTestV2 extends App {
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		}
-		if(bmp1 != null)
-		ResourceManager.getInstance().createTexture(bmp1);
-		else System.out.println("bmp1 NOT LOADED");
+		if(bmp1 != null) ResourceManager.getInstance().createTexture(bmp1);
 		
 		IBitmap<Integer> floorTex = null;
 		try {
@@ -43,9 +39,7 @@ public class RayCasterTestV2 extends App {
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		}
-		if(floorTex != null)
-		ResourceManager.getInstance().createTexture(floorTex);
-		else System.out.println("FLOOR TEXTURES NOT LOADED");
+		if(floorTex != null) ResourceManager.getInstance().createTexture(floorTex);
 
 		TileMap map = new TileMap(40, 40, true);
 		map.autoGenerate();
@@ -56,7 +50,7 @@ public class RayCasterTestV2 extends App {
 	private Game game;
 
 	public static void main(String[] args){
-		new RayCasterTestV2("RayCasterV2", 800, 600, 80, Color.BLACK, null).run();
+		new RayCasterTestV2("RayCasterV2", 800, 600, 60, Color.BLACK, null).run();
 	}
 
 	@Override
