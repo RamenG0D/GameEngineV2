@@ -15,7 +15,7 @@ import com.raycaster.utils.ResourceManager;
 public class RayCasterTestV2 extends App {
 	
 	public RayCasterTestV2(String title, int width, int height, int desiredFps, Color color, Screen screen) {
-		super(title, width, height, desiredFps, null, color, screen);
+		super(title, width, height, desiredFps, null, color, screen, false);
 
 		IBitmap<Integer> bmp = null;
 		try {
@@ -23,7 +23,7 @@ public class RayCasterTestV2 extends App {
 		} catch(MalformedURLException e) {
 			e.printStackTrace();
 		}
-		if(bmp != null) ResourceManager.getInstance().createTexture(bmp);
+		ResourceManager.getInstance().createTexture(bmp);
 
 		IBitmap<Integer> bmp1 = null;
 		try {
@@ -31,7 +31,7 @@ public class RayCasterTestV2 extends App {
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		}
-		if(bmp1 != null) ResourceManager.getInstance().createTexture(bmp1);
+		ResourceManager.getInstance().createTexture(bmp1);
 		
 		IBitmap<Integer> floorTex = null;
 		try {
@@ -39,7 +39,7 @@ public class RayCasterTestV2 extends App {
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		}
-		if(floorTex != null) ResourceManager.getInstance().createTexture(floorTex);
+		ResourceManager.getInstance().createTexture(floorTex);
 
 		TileMap map = new TileMap(40, 40, true);
 		map.autoGenerate();
@@ -54,14 +54,12 @@ public class RayCasterTestV2 extends App {
 	}
 
 	@Override
-	public void deprecatedGraphics(Graphics g) {}
-
-	@Override
 	public void update(float delta) {}
 
 	@Override
-	public void render() {
-		getScreen().setImage(game.getCurrentScreen().getImage());
+	public void render(Graphics g) {
+		g.drawImage(game.getCurrentScreen().getImage(), 0, 0, null);
+		drawFps(g);
 	}
 
 	@Override

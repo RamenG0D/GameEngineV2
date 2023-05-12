@@ -19,6 +19,7 @@ public abstract class App extends JFrame implements KeyListener, MouseInputListe
     private volatile Screen screen;
     private Color BackgroundColor;
     private double desiredFps;
+    private boolean threaded;
     private int buffer = 3;
     protected int fps;
 
@@ -32,7 +33,8 @@ public abstract class App extends JFrame implements KeyListener, MouseInputListe
      * creates a default window and graphics context
      */
     public App() {
-        init(); setupKeys();
+        this("App", 400, 400, 60, null, Color.BLACK, null, false);
+        setupKeys();
         this.setVisible(true);
     }
 
@@ -40,14 +42,24 @@ public abstract class App extends JFrame implements KeyListener, MouseInputListe
      * <h3>A class to define window and application behavior</h3>
      * creates a default window and graphics context
      */
-    public App(String title, int width, int height, int desiredfps, Integer frameBuffer, Color BackgroundColor, Screen screen) {
-        init(title, width, height, frameBuffer, desiredfps, BackgroundColor, screen); setupKeys();
+    public App(String title, int width, int height, int desiredfps, Integer frameBuffer, Color BackgroundColor, Screen screen, boolean threaded) {
+        init(title, width, height, frameBuffer, desiredfps, BackgroundColor, screen, threaded); setupKeys();
         this.setVisible(true);
     }
 
-    private void init(String title, int width, int height, Integer buffer, int desiredFps, Color backgroundColor, Screen screen) {
+    private void init(
+        String title, 
+        int width, 
+        int height, 
+        Integer buffer, 
+        int desiredFps, 
+        Color backgroundColor, 
+        Screen screen, 
+        boolean threaded
+    ) {
         if(buffer != null) this.buffer = buffer;
         this.desiredFps = desiredFps;
+        this.threaded = threaded;
 
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.setSize(width, height);
@@ -70,27 +82,12 @@ public abstract class App extends JFrame implements KeyListener, MouseInputListe
         this.BackgroundColor = c;
     }
 
-    /** Default Values */
-    private void init() {
-        this.setDefaultCloseOperation(EXIT_ON_CLOSE);
-        this.setSize(600, 600);
-        this.setLocationRelativeTo(null);
-        this.setTitle("Application"); // default Title
-        this.addMouseMotionListener(this);
-        this.addMouseListener(this);
-        this.addKeyListener(this);
-        this.setFocusable(true);
-        this.setLayout(null);
-        this.setColor(Color.BLACK);
-
-        this.screen = new Screen(400, 400);
-        //resourceManager = DepResourceManager.getInstance();
-        desiredFps = 60;
-    }
-
     public Screen getScreen() {
         return screen;
     }
+
+    protected volatile double elapsedTime;
+    protected volatile Graphics g;
 
     @Override
     public void run() {
@@ -106,19 +103,27 @@ public abstract class App extends JFrame implements KeyListener, MouseInputListe
             last = now;
 
             delta += elapsed / nsPerTick;
-
+            elapsedTime = delta;
+            
             if(delta >= 1) {
                 update((float)delta);
                 delta--;
             }
 
             if(getBufferStrategy() == null) createBufferStrategy(buffer);
-            Graphics g = getBufferStrategy().getDrawGraphics();
-            screen.drawRect(0, 0, getWidth(), getHeight(), BackgroundColor.getRGB()); // clear Screen with background color
-            render();
-            g.drawImage(screen.getImage(), 0, 0, getWidth(), getHeight(), null);
-            drawFps(g);
-            deprecatedGraphics(g);
+            g = getBufferStrategy().getDrawGraphics();
+            g.setColor(BackgroundColor);
+            g.fillRect(0, 0, getWidth(), getHeight());
+            if(threaded) {
+                Thread render = null;
+                render = new Thread(()->{render(g);});
+                render.start();
+                try{render.join();}
+                catch(Exception e){e.printStackTrace();};
+            } else {
+                render(g);
+                drawFps(g);
+            }
             g.dispose();
             getBufferStrategy().show();
             fpsCounter++;
@@ -128,19 +133,17 @@ public abstract class App extends JFrame implements KeyListener, MouseInputListe
             if(System.currentTimeMillis() - lastMs >= 1000) 
             {lastMs += 1000; fps = fpsCounter; fpsCounter = 0;}
 
-            try{Thread.sleep((long)((fps / desiredFps) * 10));}
-            catch(Exception e){e.printStackTrace();}
+            /*try{Thread.sleep((long)((fps / desiredFps) * 10));}
+            catch(Exception e){e.printStackTrace();}*/
 
         }
     }
 
-    public void drawFps( Graphics g) {
+    public void drawFps(Graphics g) {
         g.setColor(Color.WHITE);
         g.setFont(new Font("Calibre", Font.PLAIN, 14));
         g.drawString("FPS: "+fps, 20, 54);
     }
-
-    public abstract void deprecatedGraphics(Graphics g);
 
     private void setupKeys() {
         keys.put("ESC", new Key(KeyEvent.VK_ESCAPE, false));
@@ -152,7 +155,7 @@ public abstract class App extends JFrame implements KeyListener, MouseInputListe
     }
 
     public abstract void update(float delta); // delta is the time between now andd the last frame
-    public abstract void render(); // used for all things rendering
+    public abstract void render(Graphics g); // used for all things rendering
     public abstract void input(); // called continuosly but this function will control the flow of (keyboard / mouse) input events
 
     public void CloseApp() {
@@ -218,7 +221,7 @@ public abstract class App extends JFrame implements KeyListener, MouseInputListe
 
     public boolean keypressed(String key) {
         if(keys.get(key.toUpperCase()) != null) return keys.get(key.toUpperCase()).isPressed();
-        else try {throw new Exception("The key {"+key+"} Was not found in key map you can add new ones by calling the addCustomKey(String KeyName, int keycode) function!");}
+        else try {throw new Exception("The key {"+key+"} Was not found in key map\n you can add new ones by calling the addCustomKey(String KeyName, int keycode) function!");}
         catch(Exception e) {e.printStackTrace();}
         return false;
     }

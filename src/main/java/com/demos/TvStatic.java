@@ -18,12 +18,13 @@ public class TvStatic extends App {
     public void update(float delta) {}
 
     @Override
-    public void render() {
+    public void render(Graphics g) {
         Random rand = new Random();
         //
-        for (int r = 0; r < getScreen().getWidth(); r++) {
-            for (int c = 0; c < getScreen().getHeight(); c++) {
-                getScreen().setPixel(r, c, new Color(rand.nextInt(0, 255), rand.nextInt(0, 255), rand.nextInt(0, 255)).getRGB());
+        for (int r = 0; r < getWidth(); r++) {
+            for (int c = 0; c < getHeight(); c++) {
+                g.setColor(new Color(rand.nextInt(0, 255), rand.nextInt(0, 255), rand.nextInt(0, 255)));
+                g.fillRect(r, c, 1, 1);
             }
         }
     }
@@ -115,7 +116,4 @@ public class TvStatic extends App {
             return r;
         }
     }
-
-    @Override
-    public void deprecatedGraphics(Graphics g) {}
 }

@@ -66,20 +66,13 @@ public class TileMap implements ITileMap {
 		Tile floorTile = new Tile("TileMapGenFloor", false, false, ra0);
 		
 		for (int i = 0; i < m_width * m_height; i++){
-			if (i < m_width || i > m_width * (m_height-1) || i % m_width == 0 || i % m_width == m_width-1) {
-				if (i % 10 == 0){
-					m_tiles[i] = new Tile(wall1Tile, false);
-				} else {
-					m_tiles[i] = new Tile(wall2Tile, false);
-				}
-			} else if (i % 25 == 0){
-				m_tiles[i] = new Tile(wall1Tile, false);
-			} else {
-				if (i % 2 == 0){
-					m_tiles[i] = new Tile(airTile, false);
-				} else {
-					m_tiles[i] = new Tile(floorTile, false);
-				}
+			if(i < m_width || i > m_width * (m_height-1) || i % m_width == 0 || i % m_width == m_width-1) {
+				if (i % 10 == 0) m_tiles[i] = new Tile(wall1Tile, false);
+				else m_tiles[i] = new Tile(wall2Tile, false);
+			} else if(i % 25 == 0) m_tiles[i] = new Tile(wall1Tile, false);
+			else {
+				if (i % 2 == 0) m_tiles[i] = new Tile(airTile, false);
+				else m_tiles[i] = new Tile(floorTile, false);
 			}
 		}
 	}

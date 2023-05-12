@@ -49,6 +49,7 @@ public class Screen extends Canvas {
         pixels[y*getWidth()+x] = color;
     }
 
+    @Deprecated
     public void drawLine(int x1, int y1, int x2, int y2, int r, int g, int b) {
         int dx = x2 - x1, dy = y2 - y1;
         double l = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
@@ -61,6 +62,7 @@ public class Screen extends Canvas {
         }
     }
 
+    @Deprecated
     public void drawLine(int x1, int y1, int x2, int y2, int color) {
         int dx = x2 - x1, dy = y2 - y1;
         double l = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
@@ -73,6 +75,7 @@ public class Screen extends Canvas {
         }
     }
 
+    @Deprecated
     public void drawRect(int x, int y, int width, int height, int r, int g, int b) {
         for(int row = 0; row < image.getWidth(); row++) {
             for(int col = 0; col < image.getHeight(); col++) {
@@ -83,6 +86,7 @@ public class Screen extends Canvas {
         }
     }
 
+    @Deprecated
     public void drawRect(int x, int y, int width, int height, int color) {
         for(int r = 0; r < image.getWidth(); r++) {
             for(int c = 0; c < image.getHeight(); c++) {
@@ -93,11 +97,7 @@ public class Screen extends Canvas {
         }
     }
 
-    public final boolean contains(int x, int y, int width, int height, int x2, int y2) {
-        return new Rectangle(x, y, width, height).contains(x2, y2);
-    }
-
-    public final boolean contains(int x, int y, Rectangle r) {
+    private final boolean contains(int x, int y, Rectangle r) {
         return r.contains(x, y);
     }
 

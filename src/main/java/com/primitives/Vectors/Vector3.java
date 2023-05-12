@@ -2,14 +2,35 @@ package com.primitives.Vectors;
 
 public class Vector3 {
 
-    public static final Vector3 X = new Vector3(1, 0, 0);
-    public static final Vector3 Y = new Vector3(0, 1, 0);
-    public static final Vector3 Z = new Vector3(0, 0, 1);
-    public static final Vector3 NEG_X = new Vector3(-1, 0, 0);
-    public static final Vector3 NEG_Y = new Vector3(0, -1, 0);
-    public static final Vector3 NEG_Z = new Vector3(0, 0, -1);
-    public static final Vector3 ZERO = new Vector3(0, 0, 0);
-    
+    /** returns a (1, 0, 0) Vector */
+    public static final Vector3 IDENTITY_X() {
+        return new Vector3(1, 0, 0);
+    }
+    /** returns a (0, 1, 0) Vector */
+    public static final Vector3 IDENTITY_Y() {
+        return new Vector3(0, 1, 0);
+    }
+    /** returns a (0, 0, 1) Vector */
+    public static final Vector3 IDENTITY_Z() {
+        return new Vector3(0, 0, 1);
+    }
+    /** returns a (-1, 0, 0) Vector */
+    public static final Vector3 IDENTITY_NEG_X() {
+        return new Vector3(-1, 0, 0);
+    }
+    /** returns a (0, -1, 0) Vector */
+    public static final Vector3 IDENTITY_NEG_Y() {
+        return new Vector3(0, -1, 0);
+    }
+    /** returns a (0, 0, -1) Vector */
+    public static final Vector3 IDENTITY_NEG_Z() {
+        return new Vector3(0, 0, -1);
+    }
+    /** returns a (0, 0, 0) Vector */
+    public static final Vector3 IDENTITY() {
+        return new Vector3(0, 0, 0);
+    }
+
     private double x;
     private double y;
     private double z;

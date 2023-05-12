@@ -12,13 +12,13 @@ public class PlayerTest extends App {
     private Player p = new Player(15, 40);
     //
     public PlayerTest(String title, int width, int height, int desiredFps, Integer frameBuffer, Color BackgroundColor) {
-        super(title, width, height, desiredFps, frameBuffer, BackgroundColor, null);
+        super(title, width, height, desiredFps, frameBuffer, BackgroundColor, null, true);
         //
         addCustomKey("Q", KeyEvent.VK_Q); // Example of how to add a new key other than the defaults -> [w,a,s,d,esc,spc(space)]
     }
 
     @Override
-    public void render() {
+    public void render(Graphics g) {
         p.dx = Math.cos(p.angle*Math.PI/180.0) * 5;
         p.dy = -Math.sin(p.angle*Math.PI/180.0) * 5;
 
@@ -76,11 +76,5 @@ public class PlayerTest extends App {
     @SuppressWarnings("unused")
     private double DegToRad(double a) {
         return a * Math.PI/180.0;
-    }
-
-    @Override
-    public void deprecatedGraphics(Graphics g) {
-        g.setColor(Color.gray);
-        g.drawRect(30, 30, 100, 100);
     }
 }

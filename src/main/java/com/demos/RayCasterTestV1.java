@@ -8,7 +8,7 @@ import com.Application.App;
 public class RayCasterTestV1 extends App {
 
     public RayCasterTestV1() {
-        super("RayCast", 800, 600, 60, null, Color.BLACK, null);
+        super("RayCast", 800, 600, 60, null, Color.BLACK, null, true);
 
         px = 150;
         py = 400;
@@ -22,15 +22,11 @@ public class RayCasterTestV1 extends App {
     }
 
     @Override
-    public void deprecatedGraphics(Graphics g) {
-    }
-
-    @Override
     public void update(float delta) {
     }
 
     @Override
-    public void render() {
+    public void render(Graphics g) {
         /*drawMap2D();
         drawPlayer2D();*/
         drawRays2D();
@@ -192,9 +188,13 @@ public class RayCasterTestV1 extends App {
                 rx = vx;
                 ry = vy;
                 disH = disV;
-                getScreen().drawLine((int) px, (int) py, (int) rx, (int) ry, Color.blue.getRGB());
+                g.setColor(Color.blue);
+                g.drawLine((int) px, (int) py, (int) rx, (int) ry);
             }
-            else {getScreen().drawLine((int) px, (int) py, (int) rx, (int) ry, Color.BLACK.getRGB());}
+            else {
+                g.setColor(Color.BLACK);
+                g.drawLine((int) px, (int) py, (int) rx, (int) ry);
+            }
 
             int ca = FixAng((int)(pa-ra)); 
             disH=(float) (disH*Math.cos(degToRad(ca)));
@@ -205,9 +205,9 @@ public class RayCasterTestV1 extends App {
             int lineOff = 250 - (lineH >> 1);// line offset
             int l = (int)(r * 8); int rgb = (int)(Math.abs(Math.cos(192-(disH/disV)))*70);
             if(rgb > 255) rgb = 255; if(rgb < 0) rgb = 0;
-            int p = (int)(new Color(rgb, rgb, rgb).getRGB());
 
-            getScreen().drawRect(l, lineOff, l, lineOff + lineH, p);
+            g.setColor(new Color(rgb, rgb, rgb));
+            g.drawRect((int)l, (int)lineOff, (int)l, (int)(lineOff + lineH));
 
             ra = FixAng((int)(ra - 1));// go to next ray
         }

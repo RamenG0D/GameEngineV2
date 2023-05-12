@@ -8,7 +8,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.Charset;
-
 import com.primitives.Tuple;
 
 public class DepResourceManager implements DepIResourceManager {
@@ -55,7 +54,9 @@ public class DepResourceManager implements DepIResourceManager {
         }
     }
 
-    private DepResourceManager() {
+    private DepResourceManager() {}
+
+    public final void initDefaultDirs() {
         File[] folders = {
             new File("AppData/settings"),
             new File("AppData/saves"),
@@ -67,6 +68,15 @@ public class DepResourceManager implements DepIResourceManager {
                 dir.mkdirs();    
             }
         }
+    }
+
+    public final void mkDir(String directory) {
+        File dir = new File(directory);
+        if(!dir.exists()) {
+            dir.mkdirs(); 
+        } else try
+        {throw new Exception("Couldn't successfully create the new dir perhaps it already exists or thers a file with the same name");} 
+        catch(Exception e) {e.printStackTrace();}
     }
 
     public static DepResourceManager getInstance() {
