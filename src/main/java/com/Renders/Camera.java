@@ -1,16 +1,36 @@
 package com.Renders;
 
-import com.primitives.Quaternion;
-import com.primitives.Vectors.Vector3;
+public abstract class Camera implements ICamera {
+    //private Quaternion rotation = Quaternion;
+    private double x, y;
+    
 
-public interface Camera {
+    public Camera(double x, double y) {
+        this.x = x;
+        this.y = y;
+    }
 
-    public Vector3 getPosition();
+    /*public Vector2 getPosition() {
+        return new Vector2(x, y);
+    }*/
 
-    public Quaternion getRotation();
+    public double getX() {
+        return x;
+    }
 
-    public void add(Vector3 v);
+    public double getY() {
+        return y;
+    }
 
-    public void sub(Vector3 v);
+    public void setX(double x) {
+        this.x = x;
+    }
 
+    public void setY(double y) {
+        this.y = y;
+    }
+
+    /*public Quaternion getRotation() {
+        return rotation;
+    }*/
 }

@@ -140,8 +140,8 @@
 #   include <OpenGL/gl.h>
 #   include <OpenGL/glu.h>
 #else
-   #include <GL/GL.h>
-   #include <GL/GLU.h>
+#   include <GL/gl.h>
+#   include <GL/glu.h>
 #endif
 
 /*
@@ -644,7 +644,7 @@ static int FGAPIENTRY FGUNUSED glutCreateMenu_ATEXIT_HACK(void (* func)(int)) { 
 #endif
 
 #ifdef __cplusplus
-   }
+    }
 #endif
 
 /*** END OF FILE ***/

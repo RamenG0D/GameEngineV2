@@ -103,7 +103,7 @@ public abstract class App extends JFrame implements KeyListener, MouseInputListe
             last = now;
 
             delta += elapsed / nsPerTick;
-            elapsedTime = delta;
+            elapsedTime = elapsed / nsPerTick;
             
             if(delta >= 1) {
                 update((float)delta);
@@ -131,7 +131,7 @@ public abstract class App extends JFrame implements KeyListener, MouseInputListe
             input();
 
             if(System.currentTimeMillis() - lastMs >= 1000) 
-            {lastMs += 1000; fps = fpsCounter; fpsCounter = 0;}
+            {lastMs += 1000; fps = fpsCounter; fpsCounter = 0; System.gc();}
 
             /*try{Thread.sleep((long)((fps / desiredFps) * 10));}
             catch(Exception e){e.printStackTrace();}*/

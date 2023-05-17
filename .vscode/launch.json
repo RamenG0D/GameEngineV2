@@ -3,6 +3,27 @@
     "configurations": [
         {
             "type": "java",
+            "name": "PlayerTest",
+            "request": "launch",
+            "mainClass": "com.demos.PlayerTest",
+            "projectName": "application"
+        },
+        {
+            "type": "java",
+            "name": "Native",
+            "request": "launch",
+            "mainClass": "com.GraphicsAPI.Native",
+            "projectName": "application"
+        },
+        {
+            "type": "java",
+            "name": "MinecraftClone",
+            "request": "launch",
+            "mainClass": "com.demos.MinecraftClone",
+            "projectName": "application"
+        },
+        {
+            "type": "java",
             "name": "Demo3D",
             "request": "launch",
             "mainClass": "com.demos.Demo3D",

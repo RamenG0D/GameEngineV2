@@ -1,6 +1,6 @@
 package com.primitives.Shapes;
 
-import com.primitives.Vectors.Vector3;
+import com.Math3D.Vector3;
 
 public final class Triangle {
 
@@ -15,13 +15,17 @@ public final class Triangle {
 
     /** inits a Triangle with all zero vectors */
     public Triangle() {
-        this(Vector3.IDENTITY(), Vector3.IDENTITY(), Vector3.IDENTITY());
+        this(new Vector3(), new Vector3(), new Vector3());
     }
 
-    public void multiply(double scalar) {
-        v1 = v1.multiply(scalar);
-        v2 = v2.multiply(scalar);
-        v3 = v3.multiply(scalar);
+    public void setV1(Vector3 v1) {
+        this.v1 = v1;
+    }
+    public void setV2(Vector3 v2) {
+        this.v2 = v2;
+    }
+    public void setV3(Vector3 v3) {
+        this.v3 = v3;
     }
 
     public Vector3 getV1() {

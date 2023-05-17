@@ -3,11 +3,10 @@ package com.demos;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
-
 import com.Application.App;
-import com.Entities.Player;
 
 public class PlayerTest extends App {
+    private class Player {public double dx, dy, angle;public int x, y;public Player(int x, int y) {this.x = x;this.y = y;this.angle = 90;this.dx = Math.cos(angle*Math.PI/180.0) * 5;this.dy = -Math.sin(angle*Math.PI/180.0) * 5;}}
     //private MainMenu menu = new MainMenu();
     private Player p = new Player(15, 40);
     //
@@ -22,8 +21,10 @@ public class PlayerTest extends App {
         p.dx = Math.cos(p.angle*Math.PI/180.0) * 5;
         p.dy = -Math.sin(p.angle*Math.PI/180.0) * 5;
 
-        getScreen().drawRect(p.x, p.y, 32, 32, Color.RED.getRGB());
-        getScreen().drawLine(p.x+15, p.y+15, (int)((p.x+15) + p.dx * 10), (int)((p.y+15) + p.dy * 10), Color.GREEN.getRGB());
+        g.setColor(Color.RED);
+        g.fillRect(p.x, p.y, 32, 32);
+        g.setColor(Color.GREEN);
+        g.drawLine(p.x+15, p.y+15, (int)((p.x+15) + p.dx * 10), (int)((p.y+15) + p.dy * 10));
     }
 
     @Override
