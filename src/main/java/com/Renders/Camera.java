@@ -1,36 +1,37 @@
 package com.Renders;
 
+import com.primitives.Vector3;
+
 public abstract class Camera implements ICamera {
-    //private Quaternion rotation = Quaternion;
-    private double x, y;
-    
+    protected Vector3 pos = new Vector3();
+    private float aspectRatio;
 
-    public Camera(double x, double y) {
-        this.x = x;
-        this.y = y;
+    public void setAspect(float aspect) {
+        this.aspectRatio = aspect;
     }
 
-    /*public Vector2 getPosition() {
-        return new Vector2(x, y);
-    }*/
-
-    public double getX() {
-        return x;
+    public float getAspectRatio() {
+        return aspectRatio;
     }
 
-    public double getY() {
-        return y;
+    public Camera(float x, float y) {
+        this.pos.x = x;
+        this.pos.y = y;
     }
 
-    public void setX(double x) {
-        this.x = x;
+    public float getX() {
+        return pos.x;
     }
 
-    public void setY(double y) {
-        this.y = y;
+    public float getY() {
+        return pos.y;
     }
 
-    /*public Quaternion getRotation() {
-        return rotation;
-    }*/
+    public void setX(float x) {
+        this.pos.x = x;
+    }
+
+    public void setY(float y) {
+        this.pos.y = y;
+    }
 }

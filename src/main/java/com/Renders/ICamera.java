@@ -1,12 +1,14 @@
 package com.Renders;
 
-import com.Math3D.Quaternion;
-import com.Math3D.Vector2;
-
 public interface ICamera {
 
-    public Vector2 getPosition();
+    public static enum CameraType {
+        Perspective2D,
+        Perspective3D,
+        OrthoGraphic2D, // NOT IMPLEMENTED
+        OrthoGraphic3D // NOT IMPLEMENTED
+    }
 
-    public Quaternion getRotation();
+    public CameraType getType();
 
 }

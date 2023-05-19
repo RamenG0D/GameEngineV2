@@ -8,8 +8,18 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
 import java.util.HashMap;
+import java.util.concurrent.AbstractExecutorService;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+
 import javax.swing.JFrame;
 import javax.swing.event.MouseInputListener;
+
+import com.Renders.Camera;
+import com.Renders.Perspective2D;
 import com.Renders.Screen;
 
 public abstract class App extends JFrame implements KeyListener, MouseInputListener, Runnable {
@@ -47,7 +57,27 @@ public abstract class App extends JFrame implements KeyListener, MouseInputListe
         this.setVisible(true);
     }
 
-    private void init(
+    public App setDimensions(int width, int height) {
+        this.setSize(width, height);
+        return this;
+    }
+
+    public App setAppTitle(String name) {
+        this.setTitle(name);
+        return this;
+    }
+
+    public App setFrameBuff(int buff) {
+        this.buffer = buff;
+        return this;
+    }
+
+    public App setDesiredFPS(int fps) {
+        this.desiredFps = fps;
+        return this;
+    }
+
+    public void init(
         String title, 
         int width, 
         int height, 
@@ -87,7 +117,8 @@ public abstract class App extends JFrame implements KeyListener, MouseInputListe
     }
 
     protected volatile double elapsedTime;
-    protected volatile Graphics g;
+    private Camera camera = new Perspective2D(0, 0);
+    protected volatile Graphics g;private ThreadPoolExecutor executor = new ThreadPoolExecutor(2, 5, 1_000, TimeUnit.MILLISECONDS, new SynchronousQueue<>());
 
     @Override
     public void run() {
@@ -115,11 +146,8 @@ public abstract class App extends JFrame implements KeyListener, MouseInputListe
             g.setColor(BackgroundColor);
             g.fillRect(0, 0, getWidth(), getHeight());
             if(threaded) {
-                Thread render = null;
-                render = new Thread(()->{render(g);});
-                render.start();
-                try{render.join();}
-                catch(Exception e){e.printStackTrace();};
+                try{executor.execute(()->{render(g);drawFps(g);});}
+                catch(RejectedExecutionException e){};
             } else {
                 render(g);
                 drawFps(g);
@@ -131,11 +159,9 @@ public abstract class App extends JFrame implements KeyListener, MouseInputListe
             input();
 
             if(System.currentTimeMillis() - lastMs >= 1000) 
-            {lastMs += 1000; fps = fpsCounter; fpsCounter = 0; System.gc();}
+            {lastMs += 1000; fps = fpsCounter; fpsCounter = 0;}
 
-            /*try{Thread.sleep((long)((fps / desiredFps) * 10));}
-            catch(Exception e){e.printStackTrace();}*/
-
+            if(threaded) try{while(executor.awaitTermination(500, TimeUnit.MILLISECONDS) != true);}catch(InterruptedException e) {e.printStackTrace();}
         }
     }
 
