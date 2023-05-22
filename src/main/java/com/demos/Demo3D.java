@@ -10,24 +10,26 @@ import com.primitives.Shapes.Triangle;
 
 public class Demo3D extends App {
 
-    public static void main(String[] args) {
-        new Demo3D().run();
-    }
-
-    public Demo3D() {
-        super("3D Demo", 800, 600, 60, null, Color.black, null, false);
-        //mat4 = Util.MatrixMakeProjection(90f, (float)(getHeight()/getWidth()), 0.1f, 1000f);
-    }
+    public Demo3D(){super();}
 
     @Override
-    public void update(float delta) {}
+    public void update(float delta) { this.delta = delta; }
 
-    private float theta; private Cube c = new Cube(1, 1, 1, "");
+    private float theta, delta; private Cube c = new Cube(1, 1, 1, "");
     private Matrix4 mat4;
+    
+    public static void main(String[] args) {
+        new Demo3D()
+        .setAppTitle("3D Demo")
+        .setDimensions(800, 600)
+        .setDesiredFPS(60)
+        .setFrameBuff(2)
+        .start();
+    }
 
     @Override
     public void render(Graphics g) {
-        theta += 0.01 * elapsedTime;
+        theta += 0.01f * delta;
         Matrix4 matRotZ = new Matrix4(), matRotX = new Matrix4();
         
         matRotZ = Util.MatrixMakeRotationZ(theta * 0.5f);
@@ -46,16 +48,19 @@ public class Demo3D extends App {
             v2 = Util.VectorMul(v2, 0.5f);
             v3 = Util.VectorMul(v3, 0.5f);
 
-			v1.x += 1; v1.y += 1;
-			v2.x += 1; v2.y += 1;
-			v3.x += 1; v3.y += 1;
+            // the scale used to scale it back into screen space
+            float scale = 1f; 
 
-            v1.x *= (getWidth()/2);
-			v1.y *= (getHeight()/2);
-			v2.x *= (getWidth()/2);
-			v2.y *= (getHeight()/2);
-			v3.x *= (getWidth()/2);
-			v3.y *= (getHeight()/2);
+			v1.x += scale; v1.y += scale;
+			v2.x += scale; v2.y += scale;
+			v3.x += scale; v3.y += scale;
+
+            v1.x *= 0.5f * (float)getWidth();
+			v1.y *= 0.5f * (float)getHeight();
+			v2.x *= 0.5f * (float)getWidth();
+			v2.y *= 0.5f * (float)getHeight();
+			v3.x *= 0.5f * (float)getWidth();
+			v3.y *= 0.5f * (float)getHeight();
 
             g.setColor(Color.WHITE);
             g.drawLine((int)v1.x, (int)v1.y, (int)v2.x, (int)v2.y);
@@ -66,5 +71,5 @@ public class Demo3D extends App {
 
     @Override
     public void input() {}
-    
+
 }

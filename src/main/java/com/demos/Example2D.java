@@ -5,14 +5,16 @@ import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import com.Application.App;
 
-public class PlayerTest extends App {
-    private class Player {public double dx, dy, angle;public int x, y;public Player(int x, int y) {this.x = x;this.y = y;this.angle = 90;this.dx = Math.cos(angle*Math.PI/180.0) * 5;this.dy = -Math.sin(angle*Math.PI/180.0) * 5;}}
-    //private MainMenu menu = new MainMenu();
+public class Example2D extends App {
+    private class Player{public double dx, dy, angle;public int x, y;public Player(int x, int y) {this.x = x;this.y = y;this.angle = 90;this.dx = Math.cos(angle*Math.PI/180.0) * 5;this.dy = -Math.sin(angle*Math.PI/180.0) * 5;}}
     private Player p = new Player(15, 40);
-    //
-    public PlayerTest(String title, int width, int height, int desiredFps, Integer frameBuffer, Color BackgroundColor) {
-        super(title, width, height, desiredFps, frameBuffer, BackgroundColor, null, true);
-        //
+
+    public Example2D(String title, int width, int height, int desiredFps, Integer frameBuffer) {
+        this.setAppTitle(title);
+        this.setDimensions(width, height);
+        this.setFrameBuff(frameBuffer);
+        this.setDesiredFPS(desiredFps);
+
         addCustomKey("Q", KeyEvent.VK_Q); // Example of how to add a new key other than the defaults -> [w,a,s,d,esc,spc(space)]
     }
 
@@ -26,37 +28,30 @@ public class PlayerTest extends App {
         g.setColor(Color.GREEN);
         g.drawLine(p.x+15, p.y+15, (int)((p.x+15) + p.dx * 10), (int)((p.y+15) + p.dy * 10));
     }
-
-    @Override
-    public void update(float delta) { // delta is the time between now and the last frame or the FPS
-    }
     
+    @Override
+    // delta is the time between now and the last frame or the FPS    
+    public void update(float delta) {}
+
     public static void main(String[] args) {
-        new PlayerTest("Test Application", 800, 600, 60, 3, Color.BLACK)
-        .run();
-    }
-
-    public GameState gameState = GameState.Game;
-
-    public enum GameState {
-        Game,
-        Menu
+        new Example2D("Test Application", 800, 600, 60, 2)
+        .start();
     }
 
     @Override
     public void input() { // an elagent solution such as if( keypressed( "{KEY}" ) ) {KEY} being the name / letter of the key
 
         if(keypressed("w")) {
-            p.x += p.dx*5;
-            p.y += p.dy*5;
+            p.x += p.dx*2;
+            p.y += p.dy*2;
         }
         if(keypressed("a")) {
             p.angle += 2;
             FixAng(p.angle);
         }
         if(keypressed("s")) {
-            p.x -= p.dx*5;
-            p.y -= p.dy*5;
+            p.x -= p.dx*2;
+            p.y -= p.dy*2;
         }
         if(keypressed("d")) {
             p.angle -= 2;

@@ -1,5 +1,7 @@
 package com.Renders;
 
+import com.primitives.ITransform;
+
 public interface ICamera {
 
     public static enum CameraType {
@@ -10,5 +12,7 @@ public interface ICamera {
     }
 
     public CameraType getType();
+
+    public ITransform getTransform();
 
 }

@@ -8,17 +8,18 @@ import com.Application.App;
 public class RayCasterTestV1 extends App {
 
     public RayCasterTestV1() {
-        super("RayCast", 800, 600, 60, null, Color.BLACK, null, true);
-
-        px = 150;
-        py = 400;
-        pa = 90;
+        px = 150;py = 400;pa = 90;
         pdx = (float) Math.cos(degToRad((int) pa));
         pdy = (float) -Math.sin(degToRad((int) pa));
     }
 
     public static void main(String[] args) {
-        new RayCasterTestV1().run();
+        new RayCasterTestV1()
+        .setAppTitle("RayCaster")
+        .setDimensions(800, 600)
+        .setDesiredFPS(60)
+        .setFrameBuff(2)
+        .start();
     }
 
     @Override
@@ -76,8 +77,9 @@ public class RayCasterTestV1 extends App {
                 else c = Color.gray;
                 xo = x * mapS;
                 yo = y * mapS;
-                getScreen().drawRect(xo+1, yo+1, xo+1, mapS+yo-1, c.getRGB());
-                getScreen().drawRect(mapS+xo-1, mapS+yo-1, mapS+xo-1, 0+yo+1, c.getRGB());
+                g.setColor(c);
+                g.drawRect(xo+1, yo+1, xo+1, mapS+yo-1);
+                g.drawRect(mapS+xo-1, mapS+yo-1, mapS+xo-1, 0+yo+1);
             }
         }
     }
@@ -92,16 +94,7 @@ public class RayCasterTestV1 extends App {
         return a;
     }
 
-    private double distance(double x1, double y1, double x2, double y2) {
-        return (x1 + y1) - (x2 + y2);
-    }
-
     private float px, py, pdx, pdy, pa;
-
-    private void drawPlayer2D() {
-        getScreen().drawRect((int)px-10, (int)py-10, 20, 20, Color.PINK.getRGB());
-        getScreen().drawLine((int)px, (int)py, (int)(px + pdx * 20), (int)(py + pdy * 20), Color.GREEN.getRGB());
-    }
 
     private void drawRays2D() {
         int r, mx=0, my=0, mp, dof;

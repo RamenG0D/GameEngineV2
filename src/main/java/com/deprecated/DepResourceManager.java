@@ -10,10 +10,9 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import com.primitives.Tuple;
 
-public class DepResourceManager implements DepIResourceManager {
+public class DepResourceManager {
     private static DepResourceManager manager;
 
-    @Override
     public void SaveData(String fileName, String data) throws IOException {
         String filePath = "AppData/"+fileName;
         if(new File(filePath).exists()) return;
@@ -22,7 +21,6 @@ public class DepResourceManager implements DepIResourceManager {
         f.close();
     }
 
-    @Override
     public FileData LoadFile(String path) throws IOException {
         Tuple<String, String> split = SplitName(path);
         String name = split.getA(), ext = split.getB();
@@ -46,41 +44,11 @@ public class DepResourceManager implements DepIResourceManager {
         return new Tuple<String,String>(split[0], split[split.length-1]);
     }
 
-    @Override
-    public void CreateNewDir(String path) throws IOException {
-        File newDir = new File("AppData/"+path);
-        if(newDir != null) {
-            newDir.mkdirs();
-        }
-    }
-
     private DepResourceManager() {}
 
-    public final void initDefaultDirs() {
-        File[] folders = {
-            new File("AppData/settings"),
-            new File("AppData/saves"),
-            new File("AppData/assets")
-        };
-
-        for(File dir : folders) {
-            if(!dir.exists()) {
-                dir.mkdirs();    
-            }
-        }
-    }
-
-    public final void mkDir(String directory) {
-        File dir = new File(directory);
-        if(!dir.exists()) {
-            dir.mkdirs(); 
-        } else try
-        {throw new Exception("Couldn't successfully create the new dir perhaps it already exists or thers a file with the same name");} 
-        catch(Exception e) {e.printStackTrace();}
-    }
-
     public static DepResourceManager getInstance() {
-        return (manager != null) ? manager : new DepResourceManager();
+        if(manager == null) manager = new DepResourceManager();
+        return manager;
     }
 
     public int[][] getImageAsPixelBuffer(BufferedImage img) {
@@ -125,14 +93,3 @@ public class DepResourceManager implements DepIResourceManager {
 
     
 }
-
-/*
- * FILE STRUCTURE
- * 
- * IDENTIFIER -> file type eg: player, map/level, etc
- *      |
- *    Data
- *      |
- *     EOF (End Of File)
- *           
- */

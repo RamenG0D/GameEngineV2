@@ -255,12 +255,12 @@ public final class Util {
             // original sides of the Triangle (lines) intersect with the plane
             float[] t = {0};
             outTri1.p[1] = VectorIntersectPlane(planeP, planeN, insidePoints[0], outsidePoints[0], t);
-            outTri1.t[1].u = t[0] * (outsideTex[0].u - insideTex[0].u) + insideTex[0].u;
-            outTri1.t[1].v = t[0] * (outsideTex[0].v - insideTex[0].v) + insideTex[0].v;
+            outTri1.t[1].x = t[0] * (outsideTex[0].x - insideTex[0].x) + insideTex[0].x;
+            outTri1.t[1].y = t[0] * (outsideTex[0].y - insideTex[0].y) + insideTex[0].y;
 
             outTri1.p[2] = VectorIntersectPlane(planeP, planeN, insidePoints[0], outsidePoints[1], t);
-            outTri1.t[2].u = t[0] * (outsideTex[1].u - insideTex[0].u) + insideTex[0].u;
-            outTri1.t[2].v = t[0] * (outsideTex[1].v - insideTex[0].v) + insideTex[0].v;
+            outTri1.t[2].x = t[0] * (outsideTex[1].x - insideTex[0].x) + insideTex[0].x;
+            outTri1.t[2].y = t[0] * (outsideTex[1].y - insideTex[0].y) + insideTex[0].y;
 
             return new returnClip(1, new Triangle[]{outTri1, null}); // Return the newly formed single Triangle
 
@@ -285,8 +285,8 @@ public final class Util {
 
             float[] t = {0};
             outTri1.p[2] = VectorIntersectPlane(planeP, planeN, insidePoints[0], outsidePoints[0], t);
-            outTri1.t[2].u = t[0] * (outsideTex[0].u - insideTex[0].u) + insideTex[0].u;
-            outTri1.t[2].v = t[0] * (outsideTex[0].v - insideTex[0].v) + insideTex[0].v;
+            outTri1.t[2].x = t[0] * (outsideTex[0].x - insideTex[0].x) + insideTex[0].x;
+            outTri1.t[2].y = t[0] * (outsideTex[0].y - insideTex[0].y) + insideTex[0].y;
 
             // The second Triangle is composed of one of the inside points, a
             // new point determined by the intersection of the other side of the
@@ -296,8 +296,8 @@ public final class Util {
             outTri2.p[1] = outTri1.p[2];
             outTri2.t[1] = outTri1.t[2];
             outTri2.p[2] = VectorIntersectPlane(planeP, planeN, insidePoints[1], outsidePoints[0], t);
-            outTri2.t[2].u = t[0] * (outsideTex[0].u - insideTex[1].u) + insideTex[1].u;
-            outTri2.t[2].v = t[0] * (outsideTex[0].v - insideTex[1].v) + insideTex[1].v;
+            outTri2.t[2].x = t[0] * (outsideTex[0].x - insideTex[1].x) + insideTex[1].x;
+            outTri2.t[2].y = t[0] * (outsideTex[0].y - insideTex[1].y) + insideTex[1].y;
 
             return new returnClip(2, new Triangle[]{outTri1, outTri2}); // Return two newly formed triangles which form a quad
         }

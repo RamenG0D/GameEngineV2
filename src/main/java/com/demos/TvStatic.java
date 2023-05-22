@@ -11,7 +11,10 @@ public class TvStatic extends App {
     public TvStatic() {super();}
 
     public static void main(String[] args) {
-        new TvStatic().run();
+        new TvStatic()
+        .setDesiredFPS(60)
+        .setDebug(true)
+        .run();
     }
 
     @Override
@@ -20,7 +23,7 @@ public class TvStatic extends App {
     @Override
     public void render(Graphics g) {
         Random rand = new Random();
-        //
+
         for (int r = 0; r < getWidth(); r++) {
             for (int c = 0; c < getHeight(); c++) {
                 g.setColor(new Color(rand.nextInt(0, 255), rand.nextInt(0, 255), rand.nextInt(0, 255)));

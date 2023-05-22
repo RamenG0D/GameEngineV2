@@ -151,15 +151,15 @@ public class GameFile implements IGameFile {
 		
 		if (tag.equals("TileMap")){
 			object = new TileMap();
-			
+
 			object.loadFromFile(this);
 		} else if (tag.equals("Tile")){
 			object = new Tile();
-			
+
 			object.loadFromFile(this);
 		} else if (tag.equals("ERRAttribs")){
 			object = new EpicRayRenderingAttributes();
-			
+
 			object.loadFromFile(this);
 		} else {
 			throw new RuntimeException("Unknown tag in GameFile.readSaveable!!");

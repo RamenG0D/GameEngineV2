@@ -11,7 +11,9 @@ import java.util.Comparator;
 import com.demos.Util;
 import com.demos.Util.Matrix4;
 import com.demos.Util.returnClip;
+import com.primitives.ITransform;
 import com.primitives.Mesh;
+import com.primitives.Transform3D;
 import com.primitives.Vector3;
 import com.primitives.World;
 import com.primitives.Shapes.Triangle;
@@ -23,75 +25,72 @@ public class Perspective3D extends Camera {
 		return Double.compare(z1, z2);
 	};
 	private int width = 100, height = 100;
-	private float rotation, yaw;
 	private Matrix4 projection;
-	private Vector3 
-	lookDir = new Vector3();
-	private float far, near;
-	private float fov;
+	private Transform3D transform;
 
     public Perspective3D(float x, float y, float z, int width, int height) {
-		super(x, y);Vector3 pos = new Vector3(x, y, z);
+		Vector3 pos = new Vector3(x, y, z);
 		init(70f, 0.1f, 1000f, 0f, 0f, width, height, pos);
     }
 
 	private void init(float fov, float near, float far, float yaw, float rotation, int width, int height, Vector3 pos) {
-		this.fov = fov;
-		this.near = near;
-		this.far = far;
-		this.yaw = yaw;
-		this.rotation = rotation;
-		this.pos = pos;
+		this.transform = new Transform3D(
+			pos, 
+			new Vector3(0, 0, 1), 
+			1000f, 
+			0.1f, 
+			75f, 
+			0f, 
+			0f
+		);
 		this.width = width;
 		this.height = height;
-		this.setAspect((float)height/(float)width);
 	}
 
 	public Perspective3D(float fov, float near, float far, float yaw, float rot, int width, int height, Vector3 pos) {
-		super(pos.x, pos.y);
 		init(fov, near, far, yaw, rot, width, height, pos);
 	}
 
 	public float getRotation() {
-		return rotation;
+		return transform.getRotation();
 	}
 
 	public float getNearPlane() {
-		return near;
+		return transform.getNear();
 	}
 
 	public float getFarPlane() {
-		return far;
+		return transform.getFar();
 	}
 
 	public void setNearPlane(float near) {
-		this.near = near;
+		this.transform.setNear(near);
 	}
 
 	public void setFarPlane(float far) {
-		this.far = far;
+		this.transform.setFar(far);
 	}
 
 	public void setYaw(float yaw) {
-		this.yaw = yaw;
+		this.transform.setYaw(yaw);
 	}
 
 	public float getYaw() {
-		return yaw;
+		return transform.getYaw();
 	}
 
 	public void setRotation(float rotation) {
-		this.rotation = rotation;
+		this.transform.setRotation(rotation);
 	}
 
 	public void setPosition(float x, float y, float z) {
-		this.pos.x = x;
-		this.pos.y = y;
-		this.pos.z = z;
+		this.transform.getPosition().x = x;
+		this.transform.getPosition().y = y;
+		this.transform.getPosition().z = z;
 	}
 
 	public float getFOV() {
-		return fov;
+		return transform.getFOV();
 	}
 
 	public Matrix4 getProjectionMatrix() {
@@ -99,19 +98,19 @@ public class Perspective3D extends Camera {
 	}
 
 	public Vector3 getPosition() {
-		return pos;
+		return transform.getPosition();
 	}
 
 	public float getX() {
-		return pos.x;
+		return transform.getPosition().x;
 	}
 
 	public float getY() {
-		return pos.y;
+		return transform.getPosition().y;
 	}
 
     public float getZ() {
-        return pos.z;
+        return transform.getPosition().z;
     }
 
 	public void setSize(int size) {
@@ -124,16 +123,58 @@ public class Perspective3D extends Camera {
 		this.height = h;
     }
 
-	//private boolean triangleIsVisible(Vector3 normal, Vector3 line1, Vector3 line2, Vector3 camera, Triangle triTransformed) {
-		
-	//}
-
 	/** Renderers all Objects in the World */
 	public void render(Graphics g, World world) {
-		projection = Util.MatrixMakeProjection(fov, (float)height/(float)width, near, far);
+		projection = Util.MatrixMakeProjection(transform.getFOV(), (float)height/(float)width, transform.getNear(), transform.getFar());
 		for(Mesh m : world.getAllMeshes()) {
 			this.renderObject(m, g);
 		}
+	}
+
+	public void invertPos(Triangle triProjected) {
+		triProjected.p[0].x *= -1.0f;
+		triProjected.p[1].x *= -1.0f;
+		triProjected.p[2].x *= -1.0f;
+		triProjected.p[0].y *= -1.0f;
+		triProjected.p[1].y *= -1.0f;
+		triProjected.p[2].y *= -1.0f;
+	}
+
+	public void scaleIntoView(Triangle triProjected) {
+		triProjected.p[0].x *= (float)(width/2);
+		triProjected.p[0].y *= (float)(height/2);
+		triProjected.p[1].x *= (float)(width/2);
+		triProjected.p[1].y *= (float)(height/2);
+		triProjected.p[2].x *= (float)(width/2);
+		triProjected.p[2].y *= (float)(height/2);
+	}
+
+	public void offsetVerts(Triangle triProjected) {
+		Vector3 vOffsetView = new Vector3(1, 1, 0);
+		triProjected.p[0] = Util.VectorAdd(triProjected.p[0], vOffsetView);
+		triProjected.p[1] = Util.VectorAdd(triProjected.p[1], vOffsetView);
+		triProjected.p[2] = Util.VectorAdd(triProjected.p[2], vOffsetView);
+	}
+
+	public void divByW(Triangle triProjected) {
+		triProjected.t[0].x /= triProjected.p[0].w;
+		triProjected.t[1].x /= triProjected.p[1].w;
+		triProjected.t[2].x /= triProjected.p[2].w;
+
+		triProjected.t[0].y /= triProjected.p[0].w;
+		triProjected.t[1].y /= triProjected.p[1].w;
+		triProjected.t[2].y /= triProjected.p[2].w;
+
+		triProjected.t[0].w = 1.0f / triProjected.p[0].w;
+		triProjected.t[1].w = 1.0f / triProjected.p[1].w;
+		triProjected.t[2].w = 1.0f / triProjected.p[2].w;
+
+		// Scale into view, we moved the normalising into cartesian space
+		// out of the matrix.yector function from the previous video, so
+		// do this manually
+		triProjected.p[0] = Util.VectorDiv(triProjected.p[0], triProjected.p[0].w);
+		triProjected.p[1] = Util.VectorDiv(triProjected.p[1], triProjected.p[1].w);
+		triProjected.p[2] = Util.VectorDiv(triProjected.p[2], triProjected.p[2].w);
 	}
 
     /**
@@ -146,26 +187,30 @@ public class Perspective3D extends Camera {
      */
     public void renderObject(Mesh mesh, Graphics g) {
 		BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-		projection = Util.MatrixMakeProjection(fov, getAspectRatio(), near, far);
-		Matrix4 matRotZ, matRotX;
-		matRotZ = Util.MatrixMakeRotationZ(rotation * 0.5f);
-		matRotX = Util.MatrixMakeRotationX(rotation);
-
-		Matrix4 matTrans;
-		matTrans = Util.MatrixMakeTranslation(0.0f, 0.0f, 5.0f);
-
+		projection = Util.MatrixMakeProjection(transform.getFOV(), (float)width/(float)height, transform.getNear(), transform.getFar());
+		Graphics2D g2 = img.createGraphics();
+	
 		Matrix4 matWorld;
-		// matWorld = MatrixMakeIdentity();
-		matWorld = Util.MatrixMultiplyMatrix(matRotZ, matRotX);
-		matWorld = Util.MatrixMultiplyMatrix(matWorld, matTrans);
+		{
+			Matrix4 matRotZ, matRotX;
+			matRotZ = Util.MatrixMakeRotationZ(transform.getRotation() * 0.5f);
+			matRotX = Util.MatrixMakeRotationX(transform.getRotation());
+
+			Matrix4 matTrans;
+			matTrans = Util.MatrixMakeTranslation(0.0f, 0.0f, 5.0f);
+			
+			// matWorld = MatrixMakeIdentity();
+			matWorld = Util.MatrixMultiplyMatrix(matRotZ, matRotX);
+			matWorld = Util.MatrixMultiplyMatrix(matWorld, matTrans);
+		}
 
 		Vector3 vUp = new Vector3(0, 1, 0);
 		Vector3 vTarget = new Vector3(0, 0, 1);
-		Matrix4 matCameraRot = Util.MatrixMakeRotationY(yaw);
-		lookDir = Util.MatrixMultiplyVector(matCameraRot, vTarget);
-		vTarget = Util.VectorAdd(pos, lookDir);
+		Matrix4 matCameraRot = Util.MatrixMakeRotationY(transform.getYaw());
+		transform.setLookDir(Util.MatrixMultiplyVector(matCameraRot, vTarget));
+		vTarget = Util.VectorAdd(transform.getPosition(), transform.getLookDir());
 
-		Matrix4 matCamera = Util.MatrixPointAt(pos, vTarget, vUp);
+		Matrix4 matCamera = Util.MatrixPointAt(transform.getPosition(), vTarget, vUp);
 
 		// Make matrix view from camera
 		Matrix4 matView = Util.MatrixQuickInverse(matCamera);
@@ -183,20 +228,23 @@ public class Perspective3D extends Camera {
 			triTransformed.t = tri.clone().t;
 
 			// Calculate Triangle Normal
-			Vector3 normal, line1, line2;
+			Vector3 normal;
 
-			// Get lines either side of triangle
-			line1 = Util.VectorSub(triTransformed.p[1], triTransformed.p[0]);
-			line2 = Util.VectorSub(triTransformed.p[2], triTransformed.p[0]);
+			{
+				Vector3 line1, line2;
+				// Get lines either side of triangle
+				line1 = Util.VectorSub(triTransformed.p[1], triTransformed.p[0]);
+				line2 = Util.VectorSub(triTransformed.p[2], triTransformed.p[0]);
 
-			// Take Cross Product of lines to get normal to triangle surface
-			normal = Util.VectorCrossProduct(line1, line2);
+				// Take Cross Product of lines to get normal to triangle surface
+				normal = Util.VectorCrossProduct(line1, line2);
 
-			// You Normally need to Normalise a Normal!
-			normal = Util.VectorNormalise(normal);
+				// You Normally need to Normalise a Normal!
+				normal = Util.VectorNormalise(normal);
+			}
 
 			// Get Ray from Triangle to Camera
-			Vector3 cameraRay = Util.VectorSub(triTransformed.p[0], pos);
+			Vector3 cameraRay = Util.VectorSub(triTransformed.p[0], transform.getPosition());
 
 			// If ray is aligned with normal, then triangle is visible
 			if(Util.VectorDotProduct(normal, cameraRay) < 0.0f) {
@@ -208,14 +256,14 @@ public class Perspective3D extends Camera {
 				// How "aligned" are light direction and triangle surface normal?
 				float dp = Math.max(0.1f, Util.VectorDotProduct(lightDirection, normal));
 				// Choose Colors as Required
-				triTransformed.col = Util.getColor(dp);
+				triTransformed.col = new Color(dp, dp, dp);
 
 				// Convert World Space --> View Space
 				triViewed.p[0] = Util.MatrixMultiplyVector(matView, triTransformed.p[0]);
 				triViewed.p[1] = Util.MatrixMultiplyVector(matView, triTransformed.p[1]);
 				triViewed.p[2] = Util.MatrixMultiplyVector(matView, triTransformed.p[2]);
 				triViewed.col = triTransformed.col;
-				triViewed.t = triTransformed.t.clone();
+				triViewed.t = triTransformed.t;
 
 				// Clip Viewed Triangle against near plane, this could form two additional
 				// triangles
@@ -230,49 +278,27 @@ public class Perspective3D extends Camera {
 					triProjected.p[1] = Util.MatrixMultiplyVector(projection, clipped[n].p[1]);
 					triProjected.p[2] = Util.MatrixMultiplyVector(projection, clipped[n].p[2]);
 					triProjected.col = clipped[n].col;
-					triProjected.t = clipped[n].t.clone();
+					triProjected.t = clipped[n].t;
 
-					triProjected.t[0].u /= triProjected.p[0].w;
-					triProjected.t[1].u /= triProjected.p[1].w;
-					triProjected.t[2].u /= triProjected.p[2].w;
+					Thread t = new Thread(()->{
+						divByW(triProjected);
 
-					triProjected.t[0].v /= triProjected.p[0].w;
-					triProjected.t[1].v /= triProjected.p[1].w;
-					triProjected.t[2].v /= triProjected.p[2].w;
+						// X/Y are inverted so put them back
+						invertPos(triProjected);
 
-					triProjected.t[0].w = 1.0f / triProjected.p[0].w;
-					triProjected.t[1].w = 1.0f / triProjected.p[1].w;
-					triProjected.t[2].w = 1.0f / triProjected.p[2].w;
+						// Offset verts into visible normalised space
+						offsetVerts(triProjected);
+						
+						scaleIntoView(triProjected);
+					});
+					t.start();
 
-					// Scale into view, we moved the normalising into cartesian space
-					// out of the matrix.vector function from the previous video, so
-					// do this manually
-					triProjected.p[0] = Util.VectorDiv(triProjected.p[0], triProjected.p[0].w);
-					triProjected.p[1] = Util.VectorDiv(triProjected.p[1], triProjected.p[1].w);
-					triProjected.p[2] = Util.VectorDiv(triProjected.p[2], triProjected.p[2].w);
-
-					// X/Y are inverted so put them back
-					triProjected.p[0].x *= -1.0f;
-					triProjected.p[1].x *= -1.0f;
-					triProjected.p[2].x *= -1.0f;
-					triProjected.p[0].y *= -1.0f;
-					triProjected.p[1].y *= -1.0f;
-					triProjected.p[2].y *= -1.0f;
-
-					// Offset verts into visible normalised space
-					Vector3 vOffsetView = new Vector3(1, 1, 0);
-					triProjected.p[0] = Util.VectorAdd(triProjected.p[0], vOffsetView);
-					triProjected.p[1] = Util.VectorAdd(triProjected.p[1], vOffsetView);
-					triProjected.p[2] = Util.VectorAdd(triProjected.p[2], vOffsetView);
-					triProjected.p[0].x *= (float)(width/2);
-					triProjected.p[0].y *= (float)(height/2);
-					triProjected.p[1].x *= (float)(width/2);
-					triProjected.p[1].y *= (float)(height/2);
-					triProjected.p[2].x *= (float)(width/2);
-					triProjected.p[2].y *= (float)(height/2);
+					try {t.join();}
+					catch(InterruptedException e)
+					{e.printStackTrace();}
 
 					// Store Triangles for sorting
-					trianglesToRaster.add(triProjected.clone());
+					trianglesToRaster.add(triProjected);
 				}
 			}
 		}
@@ -323,26 +349,21 @@ public class Perspective3D extends Camera {
 					listTriangles.addAll(Arrays.asList(clipped).subList(0, nTrisToAdd));
 				}
 				nNewTriangles = listTriangles.size();
-
 			}
-			Graphics2D g2 = img.createGraphics();
+
+			
 			// Draw the transformed, viewed, clipped, projected, sorted, clipped triangles
 			for (Triangle t : listTriangles) {
 				Util.TexturedTriangle(
 					new ArrayList<>(Arrays.asList((int)t.p[0].x, (int)t.p[1].x, (int)t.p[2].x)),
 					new ArrayList<>(Arrays.asList((int)t.p[0].y, (int)t.p[1].y, (int)t.p[2].y)),
-					new ArrayList<>(Arrays.asList(t.t[0].u, t.t[1].u, t.t[2].u)),
-					new ArrayList<>(Arrays.asList(t.t[0].v, t.t[1].v, t.t[2].v)),
+					new ArrayList<>(Arrays.asList(t.t[0].x, t.t[1].x, t.t[2].x)),
+					new ArrayList<>(Arrays.asList(t.t[0].y, t.t[1].y, t.t[2].y)),
 					new ArrayList<>(Arrays.asList(t.t[0].w, t.t[1].w, t.t[2].w)),
 					g2, mesh.getTexture().getImage()
 				);
 
 				g2.setColor(Color.WHITE);
-				/*g.drawPolygon(
-					new int[]{ (int)t.p[0].x, (int)t.p[1].x, (int)t.p[2].x }, 
-					new int[]{ (int)t.p[0].y, (int)t.p[1].y, (int)t.p[2].y }, 
-					3
-				);*/
 				g2.drawLine((int)t.p[0].x, (int)t.p[0].y, (int)t.p[1].x, (int)t.p[1].y);
 				g2.drawLine((int)t.p[1].x, (int)t.p[1].y, (int)t.p[2].x, (int)t.p[2].y);
 				g2.drawLine((int)t.p[2].x, (int)t.p[2].y, (int)t.p[0].x, (int)t.p[0].y);
@@ -350,7 +371,6 @@ public class Perspective3D extends Camera {
 				g.drawImage(img, 0, 0, null);
 				g.drawImage(mesh.getTexture().getImage(), 0, 0, 16, 16,  null);
 			}
-			
 		}
     }
 
@@ -358,4 +378,9 @@ public class Perspective3D extends Camera {
     public CameraType getType() {
         return CameraType.Perspective3D;
     }
+
+	@Override
+	public ITransform getTransform() {
+		return transform;
+	}
 }
