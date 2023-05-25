@@ -77,5 +77,6 @@
         "queue": "cpp",
         "gl.h": "c"
     },
-    "C_Cpp.default.compilerPath": "cl.exe"
+    "C_Cpp.default.compilerPath": "cl.exe",
+    "java.debug.settings.onBuildFailureProceed": true
 }

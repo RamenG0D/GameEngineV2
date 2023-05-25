@@ -9,7 +9,7 @@
   <artifactId>JavaGameEngine</artifactId>
   <version>0.0.1</version>
 
-  <name>JGE</name>
+  <name>JavaGameEngine</name>
   <url>https://github.com/drplague1/GameEngineV2</url>
 
   <properties>
@@ -18,15 +18,12 @@
     <maven.compiler.target>1.8</maven.compiler.target>
   </properties>
 
-  <dependencies>
-    <dependency>
-      <groupId>org.bytedeco</groupId>
-      <artifactId>javacpp</artifactId>
-      <version>1.5.8</version>
-  </dependency>
-  </dependencies>
-
   <build>
+    <resources>
+      <resource>
+        <directory>assets</directory>
+      </resource>
+    </resources>
     <pluginManagement>
       <plugins>
         <plugin>

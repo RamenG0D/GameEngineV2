@@ -1,26 +1,37 @@
 package com.Application;
 
+import java.awt.AWTException;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.Robot;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.RejectedExecutionException;
+import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.event.MouseInputListener;
-import com.Renders.Screen;
+import com.ScriptSupport.Script;
+import com.ScriptSupport.ScriptHandler;
 
-public abstract class App extends JFrame implements KeyListener, MouseInputListener, Runnable {
+public abstract class App implements KeyListener, MouseInputListener {
     private HashMap<String, Key> keys = new HashMap<>(); // used to find the new keys keycode
     //protected DepResourceManager resourceManager;
     protected volatile Mouse mouse = new Mouse();
-    private volatile Screen screen;
-    private Color BackgroundColor;
-    private double desiredFps;
-    private boolean threaded;
-    private int buffer = 3;
+    private JFrame frame = new JFrame();
+    private Color BackgroundColor = Color.BLACK;
+    private int desiredFps = 30; // 30 fps defualt
+    private boolean threaded = false, debug = false;
+    private int buffer = 3; private Robot rob;
+    private boolean capture = false;
     protected int fps;
 
     /**
@@ -32,70 +43,144 @@ public abstract class App extends JFrame implements KeyListener, MouseInputListe
      * <h3>A class to define window and application behavior</h3>
      * creates a default window and graphics context
      */
-    public App() {
-        this("App", 400, 400, 60, null, Color.BLACK, null, false);
-        setupKeys();
-        this.setVisible(true);
+    public App(String title) {
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(600, 600);
+        frame.setTitle(title);
+        frame.setLayout(null);
+        frame.addMouseMotionListener(this);
+        frame.addMouseListener(this);
+        frame.addKeyListener(this);
+        frame.setVisible(true);
+        try {this.rob = new Robot();}
+        catch(AWTException e)
+        {e.printStackTrace();}
+        this.setupKeys();
+    }
+
+    public static void splash(Graphics g, Image splash, int width, int height, int i) {
+        g.drawImage(splash, 0, 0, width, height, null);
+        g.setColor(new Color(0, 0, 0, Math.min(255, i*10)));
+        g.fillRect(0, 0, width, height);
+
+        try{Thread.sleep(50);}
+        catch(InterruptedException e)
+        {e.printStackTrace();}
     }
 
     /**
      * <h3>A class to define window and application behavior</h3>
      * creates a default window and graphics context
      */
-    public App(String title, int width, int height, int desiredfps, Integer frameBuffer, Color BackgroundColor, Screen screen, boolean threaded) {
-        init(title, width, height, frameBuffer, desiredfps, BackgroundColor, screen, threaded); setupKeys();
-        this.setVisible(true);
+    public App(){
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setTitle("Demo"); // default
+        frame.setSize(600, 600); // default
+        frame.addMouseMotionListener(this);
+        frame.addMouseListener(this);
+        frame.addKeyListener(this);
+        frame.setLayout(null);
+        frame.setVisible(true);
+        try{this.rob = new Robot();}
+        catch(AWTException e)
+        {e.printStackTrace();}
+        this.setupKeys();
     }
 
-    private void init(
+    public int getWidth() {
+        return frame.getWidth();
+    }
+
+    public int getHeight() {
+        return frame.getHeight();
+    }
+
+    public App setDimensions(int width, int height) {
+        frame.setSize(width, height);
+        frame.setLocationRelativeTo(null);
+        return this;
+    }
+
+    public App setAppTitle(String name) {
+        frame.setTitle(name);
+        return this;
+    }
+
+    public App setFrameBuff(int buff) {
+        this.buffer = buff;
+        return this;
+    }
+
+    public App setDesiredFPS(int fps) {
+        this.desiredFps = fps;
+        return this;
+    }
+
+    public App setThreaded(boolean t) {
+        this.threaded = t;
+        return this;
+    }
+
+    public final void init(
         String title, 
         int width, 
         int height, 
         Integer buffer, 
         int desiredFps, 
-        Color backgroundColor, 
-        Screen screen, 
+        Color backgroundColor,
         boolean threaded
     ) {
         if(buffer != null) this.buffer = buffer;
         this.desiredFps = desiredFps;
         this.threaded = threaded;
 
-        this.setDefaultCloseOperation(EXIT_ON_CLOSE);
-        this.setSize(width, height);
-        this.setLocationRelativeTo(null);
-        this.addMouseMotionListener(this);
-        this.addMouseListener(this);
-        this.addKeyListener(this);
-        this.setTitle(title);
-        this.setFocusable(true);
-        this.setLayout(null);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(width, height);
+        frame.setLocationRelativeTo(null);
+        frame.addMouseMotionListener(this);
+        frame.addMouseListener(this);
+        frame.addKeyListener(this);
+        frame.setTitle(title);
+        frame.setFocusable(true);
+        frame.setLayout(null);
         this.setColor(backgroundColor);
-
-        if(screen != null) this.screen = screen; 
-        else this.screen = new Screen(width, height);
-
-        //resourceManager = DepResourceManager.getInstance();
     }
 
-    public final void setColor(Color c) {
+    public synchronized void start() {
+        this.run();
+    } 
+
+    public App setColor(Color c) {
         this.BackgroundColor = c;
+        return this;
     }
 
-    public Screen getScreen() {
-        return screen;
+    public App addSystemScript(Script s) {
+        ScriptHandler.getInstance().addScript(s);
+        return this;
     }
 
-    protected volatile double elapsedTime;
     protected volatile Graphics g;
+    private ExecutorService executor = Executors.newCachedThreadPool();
 
-    @Override
-    public void run() {
+    public final void run() {
         final double nsPerTick = 1000000000D / desiredFps;
         long lastMs = System.currentTimeMillis();
         long last = System.nanoTime();
         double delta = 0.0, elapsed = 0.0;
-        int fpsCounter = 0;
+        int fpsCounter=0;
+
+        Image img = null;
+        try{
+            img = ImageIO.read(new File("assets/rainbow.png"));
+        }catch(IOException e){}
+        for (int i = 0; i < 60; i++)
+        {
+            if(frame.getBufferStrategy() == null) frame.createBufferStrategy(buffer);
+            g = frame.getBufferStrategy().getDrawGraphics();
+            splash(g, img, frame.getWidth(), frame.getHeight(), i);
+            frame.getBufferStrategy().show();
+        }
 
         while(state == App.ApplicationState.Running) {
             long now = System.nanoTime();
@@ -103,40 +188,43 @@ public abstract class App extends JFrame implements KeyListener, MouseInputListe
             last = now;
 
             delta += elapsed / nsPerTick;
-            elapsedTime = delta;
-            
+
             if(delta >= 1) {
                 update((float)delta);
+                ScriptHandler.getInstance().runScripts();
                 delta--;
-            }
 
-            if(getBufferStrategy() == null) createBufferStrategy(buffer);
-            g = getBufferStrategy().getDrawGraphics();
-            g.setColor(BackgroundColor);
-            g.fillRect(0, 0, getWidth(), getHeight());
-            if(threaded) {
-                Thread render = null;
-                render = new Thread(()->{render(g);});
-                render.start();
-                try{render.join();}
-                catch(Exception e){e.printStackTrace();};
-            } else {
-                render(g);
-                drawFps(g);
-            }
-            g.dispose();
-            getBufferStrategy().show();
-            fpsCounter++;
+                if(frame.getBufferStrategy() == null) frame.createBufferStrategy(buffer);
+                final Graphics g = frame.getBufferStrategy().getDrawGraphics();
+                g.setColor(BackgroundColor);
+                g.fillRect(0, 0, frame.getWidth(), frame.getHeight());
+                if(threaded) {
+                    try{executor.execute(()->{render(g); if(debug){drawFps(g);} g.dispose();});}
+                    catch(RejectedExecutionException e){};
+                } else {
+                    render(g);
+                    if(debug)
+                    {drawFps(g);}
+                    g.dispose();
+                }
+                frame.getBufferStrategy().show();
+                if(debug){fpsCounter++;}
 
-            input();
+                input();
+            }
 
             if(System.currentTimeMillis() - lastMs >= 1000) 
-            {lastMs += 1000; fps = fpsCounter; fpsCounter = 0;}
-
-            /*try{Thread.sleep((long)((fps / desiredFps) * 10));}
-            catch(Exception e){e.printStackTrace();}*/
-
+            {
+                if(debug){fps = fpsCounter; fpsCounter = 0;}
+                lastMs += 1000;
+            }
         }
+    }
+
+    /** its not nessesary to set this to false as that is the default */
+    public App setDebug(boolean debug) {
+        this.debug = debug;
+        return this;
     }
 
     public void drawFps(Graphics g) {
@@ -154,13 +242,20 @@ public abstract class App extends JFrame implements KeyListener, MouseInputListe
         keys.put("D", new Key(KeyEvent.VK_D, false));
     }
 
+    public void captureMouse() {
+    }
+
+    public void releaseMouse() {
+        //
+    }
+
     public abstract void update(float delta); // delta is the time between now andd the last frame
     public abstract void render(Graphics g); // used for all things rendering
     public abstract void input(); // called continuosly but this function will control the flow of (keyboard / mouse) input events
 
     public void CloseApp() {
-        this.dispatchEvent(
-            new WindowEvent(this, WindowEvent.WINDOW_CLOSING)
+        frame.dispatchEvent(
+            new WindowEvent(frame, WindowEvent.WINDOW_CLOSING)
         );
     }
 
@@ -191,6 +286,7 @@ public abstract class App extends JFrame implements KeyListener, MouseInputListe
 
     public class Mouse {
         private int x, y, cX, cY;
+        private boolean captured;
 
         public int getX() {
             return x;
@@ -207,6 +303,14 @@ public abstract class App extends JFrame implements KeyListener, MouseInputListe
         public int getCY() {
             return cY;
         }
+
+        public void setCaptured(boolean captured) {
+            this.captured = captured;
+        }
+
+        public boolean isCaptured() {
+            return captured;
+        }
     }
     
     @Override
@@ -221,7 +325,7 @@ public abstract class App extends JFrame implements KeyListener, MouseInputListe
 
     public boolean keypressed(String key) {
         if(keys.get(key.toUpperCase()) != null) return keys.get(key.toUpperCase()).isPressed();
-        else try {throw new Exception("The key {"+key+"} Was not found in key map\n you can add new ones by calling the addCustomKey(String KeyName, int keycode) function!");}
+        else try {throw new Exception("The key {"+key+"} Was not found in key map/n you can add new ones by calling the addCustomKey(String KeyName, int keycode) function!");}
         catch(Exception e) {e.printStackTrace();}
         return false;
     }
@@ -261,8 +365,11 @@ public abstract class App extends JFrame implements KeyListener, MouseInputListe
     
     @Override
     public void mouseClicked(MouseEvent e) {
-        mouse.cX = e.getX();
-        mouse.cY = e.getY();
+        if(capture) captureMouse();
+        else {
+            mouse.cX = e.getX();
+            mouse.cY = e.getY();
+        }
     }
     
     @Override
