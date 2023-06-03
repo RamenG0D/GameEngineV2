@@ -35,7 +35,7 @@ public class Example2D extends App {
 
     public static void main(String[] args) {
         new Example2D("Test Application", 800, 600, 60, 2)
-        .start();
+        .run();
     }
 
     @Override

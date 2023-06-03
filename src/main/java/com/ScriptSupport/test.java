@@ -15,7 +15,7 @@ public class test extends App {
         .setDesiredFPS(60)
         .setFrameBuff(2)
         .addSystemScript(()->{System.out.println("asdas");})
-        .start();
+        .run();
     }
 
     @Override

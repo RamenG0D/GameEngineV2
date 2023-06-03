@@ -5,7 +5,9 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.Point;
 import java.awt.Robot;
+import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -21,10 +23,10 @@ import javax.swing.JFrame;
 import javax.swing.event.MouseInputListener;
 import com.ScriptSupport.Script;
 import com.ScriptSupport.ScriptHandler;
+import com.primitives.Texture;
 
 public abstract class App implements KeyListener, MouseInputListener {
     private HashMap<String, Key> keys = new HashMap<>(); // used to find the new keys keycode
-    //protected DepResourceManager resourceManager;
     protected volatile Mouse mouse = new Mouse();
     private JFrame frame = new JFrame();
     private Color BackgroundColor = Color.BLACK;
@@ -146,10 +148,6 @@ public abstract class App implements KeyListener, MouseInputListener {
         this.setColor(backgroundColor);
     }
 
-    public synchronized void start() {
-        this.run();
-    } 
-
     public App setColor(Color c) {
         this.BackgroundColor = c;
         return this;
@@ -160,8 +158,16 @@ public abstract class App implements KeyListener, MouseInputListener {
         return this;
     }
 
-    protected volatile Graphics g;
     private ExecutorService executor = Executors.newCachedThreadPool();
+
+    public void lockMouse() {
+        if(
+            (mouse.x >= getWidth() || mouse.x <= 0) || 
+            (mouse.y >= getHeight() || mouse.y <= 0)
+        ) {
+            rob.mouseMove(getWidth()/2, getHeight()/2); // reset to middle of the screen
+        } // to use look dir ill need to add a mouse dx and dy the change in x and change in y and add it to the lookDir x and y
+    }
 
     public final void run() {
         final double nsPerTick = 1000000000D / desiredFps;
@@ -174,12 +180,18 @@ public abstract class App implements KeyListener, MouseInputListener {
         try{
             img = ImageIO.read(new File("assets/rainbow.png"));
         }catch(IOException e){}
-        for (int i = 0; i < 60; i++)
+        if(frame.getBufferStrategy() == null) frame.createBufferStrategy(buffer);
+
         {
-            if(frame.getBufferStrategy() == null) frame.createBufferStrategy(buffer);
-            g = frame.getBufferStrategy().getDrawGraphics();
-            splash(g, img, frame.getWidth(), frame.getHeight(), i);
-            frame.getBufferStrategy().show();
+            for (int i = 0; i < 60; i++)
+            {
+                {
+                    Graphics g = null;
+                    g = frame.getBufferStrategy().getDrawGraphics();
+                    splash(g, img, frame.getWidth(), frame.getHeight(), i);
+                }
+                frame.getBufferStrategy().show();
+            }
         }
 
         while(state == App.ApplicationState.Running) {
@@ -198,15 +210,10 @@ public abstract class App implements KeyListener, MouseInputListener {
                 final Graphics g = frame.getBufferStrategy().getDrawGraphics();
                 g.setColor(BackgroundColor);
                 g.fillRect(0, 0, frame.getWidth(), frame.getHeight());
-                if(threaded) {
-                    try{executor.execute(()->{render(g); if(debug){drawFps(g);} g.dispose();});}
-                    catch(RejectedExecutionException e){};
-                } else {
-                    render(g);
-                    if(debug)
-                    {drawFps(g);}
-                    g.dispose();
-                }
+                render(g);
+                if(debug)
+                {drawFps(g);}
+                g.dispose();
                 frame.getBufferStrategy().show();
                 if(debug){fpsCounter++;}
 
@@ -240,13 +247,6 @@ public abstract class App implements KeyListener, MouseInputListener {
         keys.put("A", new Key(KeyEvent.VK_A, false));
         keys.put("S", new Key(KeyEvent.VK_S, false));
         keys.put("D", new Key(KeyEvent.VK_D, false));
-    }
-
-    public void captureMouse() {
-    }
-
-    public void releaseMouse() {
-        //
     }
 
     public abstract void update(float delta); // delta is the time between now andd the last frame
@@ -285,7 +285,7 @@ public abstract class App implements KeyListener, MouseInputListener {
     }
 
     public class Mouse {
-        private int x, y, cX, cY;
+        private int x, y, cX, cY, dx, dy;
         private boolean captured;
 
         public int getX() {
@@ -302,6 +302,14 @@ public abstract class App implements KeyListener, MouseInputListener {
 
         public int getCY() {
             return cY;
+        }
+
+        public int getDx() {
+            return dx;
+        }
+
+        public int getDy() {
+            return dy;
         }
 
         public void setCaptured(boolean captured) {
@@ -365,8 +373,11 @@ public abstract class App implements KeyListener, MouseInputListener {
     
     @Override
     public void mouseClicked(MouseEvent e) {
-        if(capture) captureMouse();
-        else {
+        Image img = Texture.ArrayToImage(Texture.NoTextureFound, 16);
+        frame.setCursor(Toolkit.getDefaultToolkit().createCustomCursor(img, new Point(mouse.x, mouse.y), "CusrorNull"));
+        if(capture) {
+            lockMouse();
+        } else {
             mouse.cX = e.getX();
             mouse.cY = e.getY();
         }
