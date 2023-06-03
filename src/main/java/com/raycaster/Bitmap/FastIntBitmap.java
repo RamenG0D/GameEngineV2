@@ -54,7 +54,7 @@ public class FastIntBitmap extends AbstractBitmap<Integer> {
 
 	@Override
 	public Integer getPixel(final int index) {
-		return new Integer(m_pixels[index]);
+		return Integer.valueOf(m_pixels[index]);
 	}
 
 	@Override

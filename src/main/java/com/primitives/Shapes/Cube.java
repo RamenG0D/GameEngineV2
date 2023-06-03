@@ -2,47 +2,43 @@ package com.primitives.Shapes;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import com.primitives.Mesh;
-import com.primitives.Texture;
+
+import com.primitives.Vectors.Vector3;
 
 public class Cube extends Mesh {
-    private float x, y, z;
+    private double x, y, z;
 
-    public Cube(float x, float y, float z, String path) {
-        super(new ArrayList<>(Arrays.asList(
-            // SOUTH
-            new Triangle(new float[]{0, 0, 0, 0, 1, 0, 1, 1, 0}, new float[]{0, 1, 0, 0, 1, 0}),
-            new Triangle(new float[]{0, 0, 0, 1, 1, 0, 1, 0, 0}, new float[]{0, 1, 1, 0, 1, 1}),
-            // EAST
-            new Triangle(new float[]{1, 0, 0, 1, 1, 0, 1, 1, 1}, new float[]{0, 1, 0, 0, 1, 0}),
-            new Triangle(new float[]{1, 0, 0, 1, 1, 1, 1, 0, 1}, new float[]{0, 1, 1, 0, 1, 1}),
-            // NORTH
-            new Triangle(new float[]{1, 0, 1, 1, 1, 1, 0, 1, 1}, new float[]{0, 1, 0, 0, 1, 0}),
-            new Triangle(new float[]{1, 0, 1, 0, 1, 1, 0, 0, 1}, new float[]{0, 1, 1, 0, 1, 1}),
-            // WEST
-            new Triangle(new float[]{0, 0, 1, 0, 1, 1, 0, 1, 0}, new float[]{0, 1, 0, 0, 1, 0}),
-            new Triangle(new float[]{0, 0, 1, 0, 1, 0, 0, 0, 0}, new float[]{0, 1, 1, 0, 1, 1}),
-            // TOP
-            new Triangle(new float[]{0, 1, 0, 0, 1, 1, 1, 1, 1}, new float[]{0, 1, 0, 0, 1, 0}),
-            new Triangle(new float[]{0, 1, 0, 1, 1, 1, 1, 1, 0}, new float[]{0, 1, 1, 0, 1, 1}),
-            // BOTTOM
-            new Triangle(new float[]{1, 0, 1, 0, 0, 1, 0, 0, 0}, new float[]{0, 1, 0, 0, 1, 0}),
-            new Triangle(new float[]{1, 0, 1, 0, 0, 0, 1, 0, 0}, new float[]{0, 1, 1, 0, 1, 1})
-        )), new Texture(path));
+    public Cube(double x, double y, double z) {
+        super(
+            new ArrayList<>(Arrays.asList(new Triangle[] {
+                // FRONT
+                new Triangle(new Vector3(1, 0, 0), new Vector3(0, 0, 0), new Vector3(0, 1, 0)),
+                new Triangle(new Vector3(1, 1, 0), new Vector3(0, 1, 0), new Vector3(1, 0, 0)),
+                // BACK
+                new Triangle(new Vector3(1, 0, 1), new Vector3(0, 0, 1), new Vector3(0, 1, 1)),
+                new Triangle(new Vector3(1, 1, 1), new Vector3(0, 1, 1), new Vector3(1, 0, 1)),
+                // LEFT
+                new Triangle(new Vector3(0, 0, 0), new Vector3(0, 0, 1), new Vector3(0, 1, 1)),
+                new Triangle(new Vector3(0, 1, 0), new Vector3(0, 1, 1), new Vector3(0, 0, 0)),
+                // RIGHT
+                new Triangle(new Vector3(1, 0, 1), new Vector3(1, 0, 0), new Vector3(1, 1, 0)),
+                new Triangle(new Vector3(1, 1, 0), new Vector3(1, 1, 1), new Vector3(1, 0, 1))
+            }))
+        );
         this.x = x;
         this.y = y;
         this.z = z;
     }
 
-    public float getX() {
+    public double getX() {
         return x;
     }
 
-    public float getY() {
+    public double getY() {
         return y;
     }
 
-    public float getZ() {
+    public double getZ() {
         return z;
     }
 }

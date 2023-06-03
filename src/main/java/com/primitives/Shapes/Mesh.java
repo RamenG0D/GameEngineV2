@@ -1,29 +1,17 @@
-package com.primitives;
+package com.primitives.Shapes;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Scanner;
-import com.primitives.Shapes.Triangle;
+
+import com.primitives.Vectors.Vector3;
 
 public class Mesh {
     private ArrayList<Triangle> tris;
-    private Texture texture;
-
-    public Mesh() {}
 
     public Mesh(ArrayList<Triangle> tris) {
         this.tris = tris;
-        this.texture = new Texture("");
-    }
-
-    public Mesh(ArrayList<Triangle> tris, Texture t) {
-        this.tris = tris;
-        this.texture = t;
-    }
-
-    public Texture getTexture() {
-        return texture;
     }
 
     public Mesh(String path) {
@@ -53,7 +41,6 @@ public class Mesh {
             }
             in.close();
             this.tris = triList;
-            this.texture = new Texture("");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }

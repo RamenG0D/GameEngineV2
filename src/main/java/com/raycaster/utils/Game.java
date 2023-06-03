@@ -1,11 +1,4 @@
 package com.raycaster.utils;
-
-import java.awt.AWTEvent;
-import java.awt.Color;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.Toolkit;
-
 import com.raycaster.Entities.Player;
 import com.raycaster.Renderer.Screen;
 import com.raycaster.Renderer.Viewport3D;
@@ -15,16 +8,12 @@ import com.raycaster.Tile.World;
  * @author Squareys
  */
 public class Game implements IGame, Runnable {
-	private static final long serialVersionUID = -3419294756259121818L;
-
 	private Screen screen;
-	
 	private boolean running;
 	private Thread thread;
-	
 	private IWorld m_world;
 	private Player m_player;
-	
+
 	public Game(ITileMap map){
 		this(map, 640, 480);
 	}
@@ -102,7 +91,6 @@ public class Game implements IGame, Runnable {
 		/* gamelogic updates per second */
 		final int ticksPerSecond = 150;
 		final double secondsPerTick = 1 / (float) ticksPerSecond;
-		int tickCount = 0;
 		long now, passedTime;
 		boolean ticked;
 
@@ -122,8 +110,6 @@ public class Game implements IGame, Runnable {
 				
 				unprocessedSeconds -= secondsPerTick;
 				ticked = true;
-
-				tickCount++;
 			}
 			
 			if(ticked) {

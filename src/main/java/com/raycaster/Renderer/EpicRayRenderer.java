@@ -3,7 +3,6 @@ package com.raycaster.Renderer;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import com.raycaster.utils.IWorld;
@@ -114,10 +113,8 @@ public final class EpicRayRenderer implements IRenderer<FastIntBitmap> {
 
 	private final void renderThreaded(final ArrayList<EpicRayRay> rays) {
 		m_threadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() - 1);
-
-		Future<?> last = null;
 		for (EpicRayRay ray : rays) {
-			last = m_threadPool.submit(ray);
+			m_threadPool.submit(ray);
 		}
 
 		try {

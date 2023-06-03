@@ -2,6 +2,8 @@ package com.primitives;
 
 import java.util.ArrayList;
 
+import com.primitives.Shapes.Mesh;
+
 public class World {
     private ArrayList<Mesh> objects = new ArrayList<>();
     
