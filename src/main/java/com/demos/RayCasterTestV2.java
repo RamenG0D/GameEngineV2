@@ -6,16 +6,20 @@ import java.io.File;
 import java.net.MalformedURLException;
 
 import com.Application.App;
-import com.Renders.Screen;
 import com.raycaster.Bitmap.IBitmap;
 import com.raycaster.Tile.TileMap;
 import com.raycaster.utils.Game;
 import com.raycaster.utils.ResourceManager;
 
 public class RayCasterTestV2 extends App {
-	
-	public RayCasterTestV2(String title, int width, int height, int desiredFps, Color color, Screen screen) {
-		super(title, width, height, desiredFps, null, color, screen, false);
+	public RayCasterTestV2(String title, int width, int height, int desiredFps, Color color) {
+		this.setAppTitle(title);
+		this.setDimensions(width, height);
+		this.setDesiredFPS(desiredFps);
+		this.setColor(color);
+		this.setThreaded(true);
+		this.setDebug(true);
+		
 
 		IBitmap<Integer> bmp = null;
 		try {
@@ -49,8 +53,8 @@ public class RayCasterTestV2 extends App {
 
 	private Game game;
 
-	public static void main(String[] args){
-		new RayCasterTestV2("RayCasterV2", 800, 600, 60, Color.BLACK, null).run();
+	public static void main(String[] args) {
+		new RayCasterTestV2("RayCasterV2", 800, 600, 30, Color.BLACK).run();
 	}
 
 	@Override
@@ -59,7 +63,6 @@ public class RayCasterTestV2 extends App {
 	@Override
 	public void render(Graphics g) {
 		g.drawImage(game.getCurrentScreen().getImage(), 0, 0, null);
-		drawFps(g);
 	}
 
 	@Override

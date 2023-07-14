@@ -19,7 +19,7 @@ public class RayCasterTestV1 extends App {
         .setDimensions(800, 600)
         .setDesiredFPS(60)
         .setFrameBuff(2)
-        .start();
+        .run();
     }
 
     @Override
@@ -28,9 +28,9 @@ public class RayCasterTestV1 extends App {
 
     @Override
     public void render(Graphics g) {
-        /*drawMap2D();
-        drawPlayer2D();*/
-        drawRays2D();
+        /*drawMap2D(g);
+        drawPlayer2D(g);*/
+        drawRays2D(g);
     }
 
     @Override
@@ -69,7 +69,7 @@ public class RayCasterTestV1 extends App {
         1, 1, 1, 1, 1, 1, 1, 1
     };
 
-    void drawMap2D() {
+    void drawMap2D(Graphics g) {
         int x, y, xo, yo; Color c;
         for (y = 0; y < mapy; y++) {
             for (x = 0; x < mapx; x++) {
@@ -96,7 +96,7 @@ public class RayCasterTestV1 extends App {
 
     private float px, py, pdx, pdy, pa;
 
-    private void drawRays2D() {
+    private void drawRays2D(Graphics g) {
         int r, mx=0, my=0, mp, dof;
         float vx, vy, rx, ry, ra, disV, disH, xo = 0, yo = 0;
 

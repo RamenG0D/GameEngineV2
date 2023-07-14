@@ -86,7 +86,7 @@ public class FastFloatBitmap implements IBitmap<Float> {
 
 	@Override
 	public final Float getPixel(int index) {
-		return new Float(m_pixels[index]);
+		return Float.valueOf(m_pixels[index]);
 	}
 
 	@Override

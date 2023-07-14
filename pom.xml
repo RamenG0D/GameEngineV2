@@ -19,11 +19,13 @@
   </properties>
 
   <build>
+
     <resources>
       <resource>
         <directory>assets</directory>
       </resource>
     </resources>
+
     <pluginManagement>
       <plugins>
         <plugin>
