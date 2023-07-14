@@ -1,6 +1,7 @@
 # GameEngine V2
 
 ## This is my second attempt at any sort of game engine, the first is archived now
+
 this project is a challenge/hobby, where I only use native java libraries to make a game engine and even some renders.
 
 - TODO
@@ -20,6 +21,11 @@ this project is a challenge/hobby, where I only use native java libraries to mak
   - general refactors and stuff
   - considering moving the graphical portions to javaFX... still it might not work out
   - and finally i need to work on multi thread more and adding the functionality to more easily multi thread stuff
+
+## Some cool demos
+
+<img src="https://github.com/drplague1/GameEngineV2/blob/main/github_assets/Cube_Demo.gif?raw=true">
   
-# Help Me out by Staring this repo
+## Help Me out by Staring this repo
+
 please star it :)
